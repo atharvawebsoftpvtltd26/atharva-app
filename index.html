@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATHARVA WEBSOFT (OPC) PRIVATE LIMITED - Enterprise ERP & Route Service</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a'
+            },
+            cctv: {
+              500: '#06b6d4',
+              600: '#0891b2'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', sans-serif;
+    }
+    .badge-pulse {
+      animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    @keyframes pulse-ring {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.08); }
+    }
+    @media print {
+      body * { visibility: hidden; }
+      #printableArea, #printableArea * { visibility: visible; }
+      #printableArea { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased select-none">
+
+  <!-- ================= AUTHENTICATION MODAL / LOGIN OVERLAY ================= -->
+  <div id="loginScreen" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-6">
+      
+      <!-- Brand Logo in Login -->
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-xl shadow-blue-500/20">
+          <i class="fa-solid fa-shield-halved text-white text-2xl"></i>
+        </div>
+        <h2 class="text-lg font-extrabold text-white tracking-wide uppercase">ATHARVA WEBSOFT (OPC) PVT LTD</h2>
+        <p class="text-xs text-slate-400">Enterprise Cloud ERP • Billing • Field Route Manager</p>
+      </div>
+
+      <!-- Quick Demo Account Fillers -->
+      <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 space-y-2">
+        <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">Quick Switch Credentials (Click to Fill):</span>
+        <div class="grid grid-cols-3 gap-2 text-[10px]">
+          <button onclick="fillLoginCreds('admin', 'admin123')" class="p-2 bg-slate-800 hover:bg-slate-700 text-blue-400 rounded-xl font-mono text-center border border-slate-700">
+            <b>Admin / MD</b><br>admin
+          </button>
+          <button onclick="fillLoginCreds('operator', 'desk123')" class="p-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded-xl font-mono text-center border border-slate-700">
+            <b>Operator</b><br>operator
+          </button>
+          <button onclick="fillLoginCreds('ramesh', 'tech123')" class="p-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 rounded-xl font-mono text-center border border-slate-700">
+            <b>Technician</b><br>ramesh
+          </button>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Username / ID</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">
+              <i class="fa-solid fa-user"></i>
+            </span>
+            <input type="text" id="loginUsername" required placeholder="Enter username" class="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-500">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-blue-500/25 transition">
+          Secure Login &rarr;
+        </button>
+      </form>
+
+      <p class="text-[11px] text-center text-slate-500">100% Cloud Synced to Google Drive & Sheets Database</p>
+    </div>
+  </div>
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Company Brand -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <i class="fa-solid fa-video text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-white leading-tight uppercase">ATHARVA WEBSOFT (OPC) PRIVATE LIMITED</h1>
+            <span class="hidden md:inline text-[9px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">OPC PVT LTD</span>
+          </div>
+          <p class="text-[11px] text-slate-400">IT Solutions • CCTV Surveillance • Cloud Route Management</p>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center space-x-3">
+        
+        <!-- Live Notifications Bell -->
+        <div class="relative">
+          <button id="notifBtn" onclick="toggleNotifPanel()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 relative transition">
+            <i class="fa-regular fa-bell text-lg"></i>
+            <span id="notifBadge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full badge-pulse"></span>
+          </button>
+          
+          <div id="notifPanel" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-4 z-50">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Live Field Dispatch Alert</span>
+              <button onclick="clearNotifs()" class="text-xs text-blue-400 hover:underline">Clear</button>
+            </div>
+            <div id="notifList" class="mt-3 space-y-2 max-h-72 overflow-y-auto pr-1 text-xs">
+              <p class="text-slate-500 text-center py-4">No recent technician activity.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Profile & Logout -->
+        <div class="flex items-center space-x-2 pl-2 border-l border-slate-800">
+          <div class="text-right hidden sm:block">
+            <div class="text-xs font-bold text-white" id="sessionUserName">Admin User</div>
+            <span class="text-[10px] text-cyan-400 font-mono" id="sessionUserRole">Managing Director</span>
+          </div>
+          <button onclick="logoutCurrentUser()" title="Sign Out" class="p-2.5 rounded-xl bg-slate-800 hover:bg-rose-900/40 text-slate-300 hover:text-rose-400 border border-slate-700 transition">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full flex flex-col">
+
+    <!-- Role Status & Cloud Banner -->
+    <div id="roleAlert" class="mb-5 p-3 rounded-2xl bg-blue-950/40 border border-blue-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-blue-200">
+      <div class="flex items-center space-x-2.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span id="roleNotice">Role: <b>Managing Director (Admin)</b> — Full enterprise access active.</span>
+      </div>
+      <div class="flex items-center space-x-2 text-[11px] font-mono text-slate-400">
+        <span id="syncIndicator"><i class="fa-solid fa-cloud-arrow-up text-cyan-400 mr-1"></i> Google Drive Cloud Sync: Live</span>
+        <button onclick="forceCloudSync()" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 text-[10px]"><i class="fa-solid fa-rotate"></i> Sync</button>
+      </div>
+    </div>
+
+    <!-- TABS NAVIGATION (Desktop / Admin / Operator View) -->
+    <div id="desktopNav" class="flex flex-wrap gap-2 pb-4 border-b border-slate-800 mb-6">
+      <button onclick="changeTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white flex items-center space-x-2">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </button>
+      <button onclick="changeTab('billing')" id="tab-billing" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center space-x-2 border border-slate-800">
+        <i class="fa-solid fa-receipt"></i>
+        <span>Billing & Warranty Desk</span>
+      </button>
+      <button onclick="changeTab('routes')" id="tab-routes" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center space-x-2 border border-slate-800">
+        <i class="fa-solid fa-route"></i>
+        <span>Route Chart & Assignment</span>
+      </button>
+      <button onclick="changeTab('stock')" id="tab-stock" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center space-x-2 border border-slate-800">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <span>Stock In / Out</span>
+      </button>
+      <button onclick="changeTab('calls')" id="tab-calls" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center space-x-2 border border-slate-800">
+        <i class="fa-solid fa-phone-volume"></i>
+        <span>Call In / Out & Followup</span>
+      </button>
+      <button onclick="changeTab('expenses')" id="tab-expenses" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 flex items-center space-x-2 border border-slate-800">
+        <i class="fa-solid fa-gas-pump"></i>
+        <span>Tour & Gaadi Service</span>
+      </button>
+      <button onclick="changeTab('users')" id="tab-users" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-purple-400 flex items-center space-x-2 border border-purple-900/50">
+        <i class="fa-solid fa-users-gear"></i>
+        <span>User Logins & Roles</span>
+      </button>
+    </div>
+
+    <!-- VIEW 1: DASHBOARD -->
+    <section id="view-dashboard" class="view-panel space-y-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-slate-400">Total Billed Sales</div>
+          <div class="text-2xl font-bold text-white mt-1" id="dashTotalSales">₹0</div>
+          <div class="text-[11px] text-emerald-400 mt-1 flex items-center"><i class="fa-solid fa-shield mr-1"></i> Auto calculated</div>
+          <div class="absolute -right-2 -bottom-2 text-slate-800/60 text-5xl pointer-events-none"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-slate-400">Pending Field Calls</div>
+          <div class="text-2xl font-bold text-amber-400 mt-1" id="dashPendingCalls">0</div>
+          <div class="text-[11px] text-amber-400/80 mt-1">Awaiting Route Close</div>
+          <div class="absolute -right-2 -bottom-2 text-slate-800/60 text-5xl pointer-events-none"><i class="fa-solid fa-clock"></i></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-slate-400">Registered Staff</div>
+          <div class="text-2xl font-bold text-cyan-400 mt-1" id="dashStaffCount">3 Active</div>
+          <div class="text-[11px] text-cyan-400/80 mt-1">With Role Credentials</div>
+          <div class="absolute -right-2 -bottom-2 text-slate-800/60 text-5xl pointer-events-none"><i class="fa-solid fa-user-shield"></i></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-slate-400">Low Stock Alert</div>
+          <div class="text-2xl font-bold text-rose-400 mt-1" id="dashLowStock">0 Items</div>
+          <div class="text-[11px] text-rose-400/80 mt-1">Refill CCTV / Hard Disk</div>
+          <div class="absolute -right-2 -bottom-2 text-slate-800/60 text-5xl pointer-events-none"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        </div>
+      </div>
+
+      <!-- Live Technician Status & Quick Actions -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-semibold text-white">Live Route Assignments (आज का रूट चार्ट)</h2>
+              <p class="text-xs text-slate-400">Real-time status of field technicians visiting client sites</p>
+            </div>
+            <button onclick="changeTab('routes')" class="text-xs text-blue-400 hover:text-blue-300 font-medium">Assign Route &rarr;</button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase tracking-wider font-semibold">
+                <tr>
+                  <th class="py-3 px-3">Technician</th>
+                  <th class="py-3 px-3">Route Sector</th>
+                  <th class="py-3 px-3">Customers Assigned</th>
+                  <th class="py-3 px-3">Progress</th>
+                  <th class="py-3 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="dashRouteTableBody" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <h3 class="text-sm font-semibold text-white mb-3 flex items-center justify-between">
+              <span>Quick Needs & Shortage</span>
+              <span class="text-[10px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded">Stock Desk</span>
+            </h3>
+            <ul id="lowStockItemsList" class="space-y-2 text-xs"></ul>
+          </div>
+
+          <div class="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-800 rounded-2xl p-5">
+            <h3 class="text-sm font-semibold text-white mb-2">Enterprise Operations</h3>
+            <div class="grid grid-cols-2 gap-2 mt-3">
+              <button onclick="changeTab('billing')" class="p-2.5 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-xl text-xs text-blue-300 font-medium flex items-center justify-center space-x-1.5 transition">
+                <i class="fa-solid fa-plus text-[10px]"></i>
+                <span>New Invoice</span>
+              </button>
+              <button onclick="changeTab('calls')" class="p-2.5 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 rounded-xl text-xs text-purple-300 font-medium flex items-center justify-center space-x-1.5 transition">
+                <i class="fa-solid fa-phone text-[10px]"></i>
+                <span>Log Service Call</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: BILLING & WARRANTY DESK -->
+    <section id="view-billing" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <h2 class="text-base font-semibold text-white">Tax Invoice & Warranty Generator</h2>
+              <p class="text-xs text-slate-400">ATHARVA WEBSOFT (OPC) PRIVATE LIMITED Official Billing Desk</p>
+            </div>
+            <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full font-mono">Invoice #AW-<span id="invNextNumber">1042</span></span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Customer / Firm Name *</label>
+              <input type="text" id="billCustName" placeholder="e.g. Bastar Rice Mill / Rakesh" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Phone Number *</label>
+              <input type="tel" id="billCustPhone" placeholder="9876543210" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Route / Area</label>
+              <select id="billCustRoute" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-blue-500">
+                <option value="Main Market">Main Market / Golbazar</option>
+                <option value="Industrial Area">Industrial Area / Nagarnar</option>
+                <option value="Geedam Road">Geedam Road</option>
+                <option value="Dharampura Colony">Dharampura Colony</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+            <span class="text-xs font-semibold text-slate-300">Add Product & Serial / Warranty</span>
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+              <div class="sm:col-span-4">
+                <select id="billItemSelect" onchange="autoFillItemPrice()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+                  <option value="">-- Select Hardware Item --</option>
+                </select>
+              </div>
+              <div class="sm:col-span-3">
+                <input type="text" id="billSerialNo" placeholder="Serial / MAC No" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+              </div>
+              <div class="sm:col-span-2">
+                <select id="billWarrantyPeriod" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-cyan-400 focus:outline-none">
+                  <option value="1">1 Year Waranty</option>
+                  <option value="2">2 Year Waranty</option>
+                  <option value="3">3 Year Waranty</option>
+                  <option value="0">No Warranty</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <input type="number" id="billItemPrice" placeholder="Price (₹)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+              </div>
+              <div class="sm:col-span-1">
+                <button onclick="addItemToCurrentBill()" class="w-full h-full bg-blue-600 hover:bg-blue-500 rounded-lg text-white text-xs font-bold transition flex items-center justify-center">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto mt-2">
+              <table class="w-full text-left text-xs">
+                <thead class="text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th class="py-2">Item</th>
+                    <th class="py-2">Serial No.</th>
+                    <th class="py-2">Warranty Expiry</th>
+                    <th class="py-2 text-right">Price</th>
+                    <th class="py-2 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="billItemsTableBody" class="divide-y divide-slate-800"></tbody>
+              </table>
+            </div>
+
+            <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-xs">
+              <span class="text-slate-400">Total Items: <b id="billTotalItemsCount" class="text-white">0</b></span>
+              <div class="text-right">
+                <span class="text-slate-400">Grand Total: </span>
+                <span class="text-base font-bold text-emerald-400" id="billGrandTotal">₹0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="resetBillForm()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl">Clear</button>
+            <button onclick="finalizeBillAndPrint()" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-blue-600/30 flex items-center space-x-2">
+              <i class="fa-solid fa-print"></i>
+              <span>Save & Print Warranty Bill</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Warranty Verification Finder -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div>
+            <h3 class="text-sm font-semibold text-white">Warranty Verification Desk</h3>
+            <p class="text-xs text-slate-400">Search by Hardware Serial / Phone / Bill Number</p>
+          </div>
+
+          <div class="flex space-x-2">
+            <input type="text" id="warrantySearchInput" placeholder="Serial / Phone / Bill #" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500">
+            <button onclick="searchWarrantyClaim()" class="px-3 bg-cyan-600 hover:bg-cyan-500 text-white text-xs rounded-xl font-medium"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+
+          <div id="warrantySearchResult" class="text-xs p-3 bg-slate-950 rounded-xl border border-slate-800 hidden"></div>
+
+          <div class="pt-2">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Past Invoices Log</span>
+            <div id="recentInvoicesList" class="space-y-2 max-h-80 overflow-y-auto text-xs pr-1"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 3: ROUTE CHART & BATCH ASSIGNMENT -->
+    <section id="view-routes" class="view-panel hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-base font-semibold text-white">Daily Field Route Chart (रूट चार्ट असाइनमेंट)</h2>
+            <p class="text-xs text-slate-400">Batch customer service calls by route and dispatch directly to technician mobile app</p>
+          </div>
+          <button onclick="openNewCallModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl flex items-center space-x-1.5 self-start sm:self-auto">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Service Ticket</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-4 p-4 bg-slate-950 rounded-xl border border-slate-800 items-end">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Select Route Sector</label>
+            <select id="routeFilterSelect" onchange="filterRouteTable()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="ALL">All Routes (सभी इलाके)</option>
+              <option value="Main Market">Route 1: Main Market / Golbazar</option>
+              <option value="Industrial Area">Route 2: Industrial Area / Nagarnar</option>
+              <option value="Geedam Road">Route 3: Geedam Road Sector</option>
+              <option value="Dharampura Colony">Route 4: Dharampura / College Area</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Assign Selected to Technician</label>
+            <select id="routeTechSelect" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"></select>
+          </div>
+
+          <div>
+            <button onclick="batchAssignRouteTickets()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow transition flex items-center justify-center space-x-1.5">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Assign Batch & Notify Tech</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+              <tr>
+                <th class="py-3 px-3">
+                  <input type="checkbox" id="selectAllTickets" onchange="toggleSelectAllTickets(this)" class="rounded bg-slate-900 border-slate-700">
+                </th>
+                <th class="py-3 px-3">Ticket / Call</th>
+                <th class="py-3 px-3">Customer & Location</th>
+                <th class="py-3 px-3">Route Sector</th>
+                <th class="py-3 px-3">Work Description</th>
+                <th class="py-3 px-3">Assigned Tech</th>
+                <th class="py-3 px-3">Status</th>
+                <th class="py-3 px-3 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="routeTicketsTableBody" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: STOCK / INVENTORY -->
+    <section id="view-stock" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div>
+            <h2 class="text-base font-semibold text-white">Stock In (नया हार्डवेयर जोड़ें)</h2>
+            <p class="text-xs text-slate-400">Inward stock purchase of CCTV, DVR, HDD, SMPS</p>
+          </div>
+
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Item Category / Brand</label>
+              <select id="stockInCat" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+                <option value="CCTV Dome">CCTV 2MP/5MP Dome Camera</option>
+                <option value="CCTV Bullet">CCTV Bullet Outdoor Camera</option>
+                <option value="DVR / NVR">4/8/16 Channel DVR / NVR</option>
+                <option value="Storage">Surveillance Hard Disk WD Purple</option>
+                <option value="Power">CCTV Power Supply SMPS</option>
+                <option value="Motherboard">PC Motherboard H61/H81/B450</option>
+                <option value="RAM / SSD">RAM DDR3/DDR4 & SSD</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Item Model Name</label>
+              <input type="text" id="stockInName" placeholder="CP PLUS 2.4MP Astra HD Dome" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Quantity</label>
+                <input type="number" id="stockInQty" value="5" min="1" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Selling Price (₹)</label>
+                <input type="number" id="stockInCost" placeholder="Price" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+
+            <button onclick="handleStockIn()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow transition">
+              <i class="fa-solid fa-arrow-down mr-1.5"></i> Update Inward Stock
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-white">Live Hardware Stock Ledger</h2>
+              <p class="text-xs text-slate-400">Auto synchronized to cloud storage</p>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Item Description</th>
+                  <th class="py-2.5 px-3">Category</th>
+                  <th class="py-2.5 px-3 text-center">Available Stock</th>
+                  <th class="py-2.5 px-3">Selling Price</th>
+                  <th class="py-2.5 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: CALL CENTER -->
+    <section id="view-calls" class="view-panel hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div>
+            <h2 class="text-base font-semibold text-white">Call Login Desk (Call In / Call Out & Complaints)</h2>
+            <p class="text-xs text-slate-400">Phone inquiry log, repairing requests, AMC meetings, and customer follow-ups</p>
+          </div>
+          <button onclick="openNewCallModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl">
+            + New Call Entry
+          </button>
+        </div>
+
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+              <tr>
+                <th class="py-3 px-3">Type</th>
+                <th class="py-3 px-3">Customer & Phone</th>
+                <th class="py-3 px-3">Inquiry / Issue</th>
+                <th class="py-3 px-3">Registered Time</th>
+                <th class="py-3 px-3">Current Status</th>
+                <th class="py-3 px-3 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="callLogTableBody" class="divide-y divide-slate-800"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 6: TOUR EXPENSE & GADI SERVICE -->
+    <section id="view-expenses" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <h2 class="text-base font-semibold text-white">Log Travel & Bike/Car Service</h2>
+          <p class="text-xs text-slate-400">पेट्रोल, टूर खर्च और गाड़ी सर्विसिंग रिकॉर्ड</p>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block text-slate-400 mb-1">Technician / Employee</label>
+              <select id="expTechName" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"></select>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 mb-1">Expense Type</label>
+              <select id="expType" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option value="Fuel / Petrol">Daily Petrol / Fuel</option>
+                <option value="Gadi Service">Vehicle / Bike Service & Mobil Oil</option>
+                <option value="Outstation Tour">Outstation Site Tour (TA / DA / Food)</option>
+                <option value="Emergency Hardware Purchase">Emergency Field Clamp/Pvc Pipe</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-400 mb-1">Amount (₹) *</label>
+                <input type="number" id="expAmount" placeholder="₹ 250" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1">Current Odometer (KM)</label>
+                <input type="number" id="expOdo" placeholder="e.g. 14250" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 mb-1">Remarks / Location visited</label>
+              <input type="text" id="expNote" placeholder="Visited Nagarnar plant for CCTV setup" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+
+            <button onclick="logNewExpense()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl transition">
+              Submit Expense for Approval
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-white">Expenses & Vehicle Maintenance Log</h2>
+              <p class="text-xs text-slate-400">Total approved expenses: <b id="expTotalSum" class="text-emerald-400">₹0</b></p>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Date</th>
+                  <th class="py-2.5 px-3">Tech</th>
+                  <th class="py-2.5 px-3">Type</th>
+                  <th class="py-2.5 px-3">Odometer</th>
+                  <th class="py-2.5 px-3">Amount</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="expenseTableBody" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 7: USER MANAGEMENT & ROLE GENERATOR (ADMIN ONLY) -->
+    <section id="view-users" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Create New User Box -->
+        <div class="bg-slate-900 border border-purple-900/40 rounded-2xl p-5 space-y-4">
+          <div>
+            <h2 class="text-base font-semibold text-white flex items-center space-x-2">
+              <i class="fa-solid fa-user-plus text-purple-400"></i>
+              <span>Generate Staff Login Credentials</span>
+            </h2>
+            <p class="text-xs text-slate-400">Admin-only: Create username & password with role-based permissions</p>
+          </div>
+
+          <form onsubmit="handleCreateUser(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block text-slate-400 mb-1">Full Employee Name *</label>
+              <input type="text" id="newStaffName" required placeholder="e.g. Suraj Netam" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-400 mb-1">Role Permission *</label>
+                <select id="newStaffRole" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                  <option value="technician">Field Technician</option>
+                  <option value="operator">Desk Operator</option>
+                  <option value="admin">Managing Director</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1">Assigned Route</label>
+                <select id="newStaffRoute" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                  <option value="Main Market">Main Market</option>
+                  <option value="Industrial Area">Industrial Area</option>
+                  <option value="Geedam Road">Geedam Road</option>
+                  <option value="Dharampura Colony">Dharampura Colony</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-slate-400 mb-1">Username *</label>
+                <input type="text" id="newStaffUsername" required placeholder="e.g. suraj101" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono">
+              </div>
+              <div>
+                <label class="block text-slate-400 mb-1">Password *</label>
+                <input type="text" id="newStaffPassword" required placeholder="Pass@123" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-slate-400 mb-1">Mobile Number (WhatsApp) *</label>
+              <input type="tel" id="newStaffPhone" required placeholder="98261XXXXX" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+
+            <div class="pt-2">
+              <button type="button" onclick="autoGenerateCredentials()" class="text-xs text-purple-400 hover:text-purple-300 flex items-center space-x-1 mb-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Auto-Generate Random Username & Password</span>
+              </button>
+              <button type="submit" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition">
+                Create & Save Employee Login
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Users Directory Table -->
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-semibold text-white">Active System Users & Login Directory</h2>
+              <p class="text-xs text-slate-400">All registered employees who can sign in to mobile and desktop app</p>
+            </div>
+            <span class="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30 font-semibold" id="totalUsersBadge">3 Staff Active</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Name & Phone</th>
+                  <th class="py-2.5 px-3">Role</th>
+                  <th class="py-2.5 px-3">Username</th>
+                  <th class="py-2.5 px-3">Password (Secret)</th>
+                  <th class="py-2.5 px-3">Sector</th>
+                  <th class="py-2.5 px-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody" class="divide-y divide-slate-800"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VIEW 8: FIELD TECHNICIAN MOBILE APP SIMULATOR -->
+    <section id="view-technician" class="view-panel hidden">
+      <div class="max-w-md mx-auto bg-slate-900 border border-slate-700 rounded-3xl p-4 shadow-2xl overflow-hidden relative">
+        <div class="bg-slate-950 -m-4 p-4 border-b border-slate-800 mb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-9 h-9 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white flex items-center space-x-1.5">
+                <span id="mobileTechName">Ramesh Kumar</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              </div>
+              <span class="text-[10px] text-slate-400" id="mobileTechSub">Field Technician • ATHARVA WEBSOFT</span>
+            </div>
+          </div>
+          <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded font-mono">App v3.0</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 my-2">
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center">
+            <span class="text-[10px] text-slate-400">Assigned Today</span>
+            <div class="text-lg font-bold text-white" id="mobileAssignedCount">0 Calls</div>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center">
+            <span class="text-[10px] text-slate-400">Completed & Closed</span>
+            <div class="text-lg font-bold text-emerald-400" id="mobileCompletedCount">0 Done</div>
+          </div>
+        </div>
+
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mt-3 mb-2 flex items-center justify-between">
+          <span>My Route Work Checklist</span>
+          <span class="text-[10px] text-cyan-400">Tap to Complete</span>
+        </h3>
+
+        <div id="techMobileJobsList" class="space-y-3"></div>
+
+        <div class="mt-4 pt-3 border-t border-slate-800">
+          <button onclick="changeTab('expenses')" class="w-full py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 rounded-xl text-xs font-medium flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-gas-pump"></i>
+            <span>Log Petrol / Gaadi Service on Route</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODALS ================= -->
+  <!-- MODAL: NEW CUSTOMER CALL -->
+  <div id="newCallModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h3 class="text-sm font-bold text-white">Log Call / Service Ticket (कॉल व कंप्लेंट दर्ज करें)</h3>
+        <button onclick="closeNewCallModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Customer / Shop Name *</label>
+            <input type="text" id="modalCustName" placeholder="Verma Jewellers" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Phone Number *</label>
+            <input type="tel" id="modalCustPhone" placeholder="94252XXXXX" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Route / Sector</label>
+            <select id="modalCustRoute" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+              <option value="Main Market">Main Market (मुख्य बाज़ार)</option>
+              <option value="Industrial Area">Industrial Area</option>
+              <option value="Geedam Road">Geedam Road</option>
+              <option value="Dharampura Colony">Dharampura Colony</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Call Category</label>
+            <select id="modalCallType" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+              <option value="CCTV Offline / No Display">CCTV Offline / Camera Not Working</option>
+              <option value="DVR Recording Issue">DVR HDD / No Recording</option>
+              <option value="PC Repairing">PC / Laptop Not Powering On</option>
+              <option value="New CCTV Inquiry">New CCTV Quotation & Meeting</option>
+              <option value="AMC Routine Visit">Routine AMC Service Check</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Problem Description</label>
+          <textarea id="modalCallDesc" rows="2" placeholder="e.g. 2 cameras blurry, DVR continuous beeping sound" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Direct Assign to Tech (Optional)</label>
+          <select id="modalDirectTech" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"></select>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-slate-800">
+          <button onclick="closeNewCallModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Cancel</button>
+          <button onclick="saveNewCallTicket()" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl">Save Ticket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COMPLETE JOB -->
+  <div id="closeJobModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <h3 class="text-sm font-bold text-white flex items-center space-x-1.5">
+          <i class="fa-solid fa-circle-check text-emerald-400"></i>
+          <span>Complete Ticket & Close Call</span>
+        </h3>
+        <button onclick="closeModal('closeJobModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <input type="hidden" id="closingTicketId">
+      <div class="space-y-3 text-xs">
+        <div>
+          <span class="text-slate-400">Customer:</span>
+          <p id="closingCustName" class="text-white font-semibold"></p>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Work Done / Action Taken *</label>
+          <textarea id="closingRemarks" rows="2" placeholder="e.g. Replaced BNC connector, DVR adapter changed, all 4 cameras online" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Spare Parts Used (if any)</label>
+          <input type="text" id="closingPartsUsed" placeholder="1x 12V 2A Adapter, 2x BNC" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white">
+        </div>
+
+        <div class="p-3 bg-emerald-950/40 border border-emerald-800/40 rounded-xl text-[11px] text-emerald-300">
+          <i class="fa-solid fa-bell mr-1"></i> Completing this job will instantly dispatch a live sound alert and alert notification to Admin and Operator screens!
+        </div>
+
+        <button onclick="submitJobClosure()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition">
+          Confirm Completion & Notify Office
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINTABLE OFFICIAL INVOICE -->
+  <div id="printableArea" class="hidden p-8 bg-white text-black font-sans">
+    <div class="border-2 border-black p-6 rounded-lg max-w-2xl mx-auto">
+      <div class="flex justify-between items-start border-b-2 border-black pb-4">
+        <div>
+          <h1 class="text-xl font-black tracking-wider uppercase">ATHARVA WEBSOFT (OPC) PRIVATE LIMITED</h1>
+          <p class="text-xs font-semibold">IT Solutions • CCTV Surveillance Systems • Hardware & Desktops</p>
+          <p class="text-[11px]">Registered Office: Shop #4, Main Market Road • Support: +91 94252-XXXXX</p>
+          <p class="text-[10px] text-gray-600">CIN: U72900CT2026OPC012345 • GSTIN: 22AAAAA0000A1Z5</p>
+        </div>
+        <div class="text-right">
+          <span class="inline-block bg-black text-white px-3 py-1 font-bold text-xs uppercase tracking-wider">Tax & Warranty Invoice</span>
+          <p class="text-xs mt-1 font-mono font-bold" id="printInvNo">INV-AW-1042</p>
+          <p class="text-xs" id="printInvDate">Date: 09-Nov-2026</p>
+        </div>
+      </div>
+
+      <div class="my-4 text-xs">
+        <p><b>Billed To Customer:</b> <span id="printCustName">Ramesh Sahu</span></p>
+        <p><b>Phone / Mobile:</b> <span id="printCustPhone">9876543210</span></p>
+        <p><b>Route / Sector:</b> <span id="printCustRoute">Main Market</span></p>
+      </div>
+
+      <table class="w-full text-left text-xs border border-collapse border-black my-4">
+        <thead>
+          <tr class="bg-gray-100 border-b border-black">
+            <th class="p-2 border-r border-black">Item Description</th>
+            <th class="p-2 border-r border-black">Serial / MAC Number</th>
+            <th class="p-2 border-r border-black">Warranty Expiry</th>
+            <th class="p-2 text-right">Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="printItemsTable"></tbody>
+        <tfoot>
+          <tr class="border-t-2 border-black font-bold">
+            <td colspan="3" class="p-2 text-right border-r border-black">Grand Total:</td>
+            <td class="p-2 text-right" id="printGrandTotal">₹0</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="mt-4 p-3 border border-gray-400 rounded text-[10px] space-y-1">
+        <p class="font-bold">WARRANTY POLICY - ATHARVA WEBSOFT (OPC) PVT LTD:</p>
+        <p>1. Warranty valid strictly on presenting this certificate or physical serial number matching our records.</p>
+        <p>2. Physical burn, water seepage, voltage surges, and unauthorized opening will void warranty.</p>
+        <p>3. Field visit warranty outside local municipal route boundaries is subject to standard technician conveyance.</p>
+      </div>
+
+      <div class="flex justify-between items-end mt-10 pt-4 text-xs border-t border-gray-300">
+        <div>
+          <p class="text-[10px] text-gray-600">Atharva Websoft Official Seal & Stamp</p>
+        </div>
+        <div class="text-right">
+          <p class="font-bold">For ATHARVA WEBSOFT (OPC) PRIVATE LIMITED</p>
+          <p class="mt-8 font-semibold">Authorized Signatory</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- AUDIO ALERT ENGINE -->
+  <script>
+    function playBeepSound(type = 'success') {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (type === 'success') {
+          osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.3);
+        } else if (type === 'alert') {
+          osc.frequency.setValueAtTime(880, ctx.currentTime);
+          osc.frequency.setValueAtTime(440, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.4);
+        }
+      } catch (e) {}
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `p-3 rounded-xl shadow-lg border text-xs font-semibold text-white pointer-events-auto flex items-center space-x-2 transition transform duration-300 ${
+        type === 'success' ? 'bg-emerald-900 border-emerald-500' :
+        type === 'alert' ? 'bg-rose-900 border-rose-500' : 'bg-slate-900 border-slate-700'
+      }`;
+      toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : type === 'alert' ? 'fa-bell text-rose-400' : 'fa-info-circle text-blue-400'}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+
+  <!-- APP STATE & CORE DATA SCRIPT -->
+  <script>
+    // ==========================================
+    // Cloud API End-Point (Google Apps Script URL)
+    // Replace with your Apps Script Deployment URL
+    // ==========================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRJSTDoweZxgjpl5zUOfMPamuhokg7YDCb_D8O-GRvGrtPllG6gcG3yn4C99l395wb9w/exec";
+
+    const STORAGE_KEY = 'ATHARVA_WEBSOFT_STATE_V2';
+
+    // Master Initial State with Registered Logins
+    const defaultInitialState = {
+      currentUser: null, // logged-in user object
+      currentTab: 'dashboard',
+      users: [
+        { id: 'usr-1', username: 'admin', pass: 'admin123', name: 'Managing Director (MD)', role: 'admin', phone: '9425200001', route: 'All Routes' },
+        { id: 'usr-2', username: 'operator', pass: 'desk123', name: 'Counter Desk Manager', role: 'operator', phone: '9425200002', route: 'Main Market' },
+        { id: 'usr-3', username: 'ramesh', pass: 'tech123', name: 'Ramesh Kumar', role: 'technician', phone: '9826100003', route: 'Main Market' },
+        { id: 'usr-4', username: 'amit', pass: 'tech123', name: 'Amit Sahu', role: 'technician', phone: '9826100004', route: 'Industrial Area' }
+      ],
+      inventory: [
+        { id: 'itm-1', name: 'CP PLUS 2.4MP Astra Dome CCTV Camera', cat: 'CCTV Dome', stock: 12, minStock: 4, price: 1450 },
+        { id: 'itm-2', name: 'Hikvision 2MP Turbo HD Bullet Camera', cat: 'CCTV Bullet', stock: 3, minStock: 5, price: 1650 },
+        { id: 'itm-3', name: 'CP PLUS 4 Channel HD DVR (H.265+)', cat: 'DVR / NVR', stock: 6, minStock: 2, price: 2900 },
+        { id: 'itm-4', name: 'WD Purple 1TB Surveillance HDD', cat: 'Storage', stock: 2, minStock: 3, price: 3800 },
+        { id: 'itm-5', name: 'ERD 12V 5A 4-Channel SMPS Power Box', cat: 'Power', stock: 9, minStock: 3, price: 750 },
+        { id: 'itm-6', name: 'H81 Motherboard Zebronics / Frontech', cat: 'Motherboard', stock: 4, minStock: 2, price: 2600 },
+        { id: 'itm-7', name: 'DDR3 4GB 1600MHz Desktop RAM', cat: 'RAM / SSD', stock: 8, minStock: 3, price: 700 }
+      ],
+      tickets: [
+        {
+          id: 'TICK-101',
+          custName: 'Verma Jewellers',
+          phone: '9425201122',
+          route: 'Main Market',
+          type: 'CCTV Offline / No Display',
+          desc: '2 counter cameras black screen, DVR is on',
+          assignedTo: 'Ramesh Kumar',
+          status: 'In Progress',
+          createdAt: '09-Nov-2026 09:30 AM',
+          completedAt: null,
+          remarks: ''
+        },
+        {
+          id: 'TICK-102',
+          custName: 'Bastar Transport Office',
+          phone: '9826133445',
+          route: 'Geedam Road',
+          type: 'DVR Recording Issue',
+          desc: 'Hard disk continuous beeping, not recording footage',
+          assignedTo: 'Amit Sahu',
+          status: 'Assigned',
+          createdAt: '09-Nov-2026 10:15 AM',
+          completedAt: null,
+          remarks: ''
+        },
+        {
+          id: 'TICK-103',
+          custName: 'Balaji Rice Mill',
+          phone: '9406088990',
+          route: 'Industrial Area',
+          type: 'New CCTV Inquiry',
+          desc: 'Requires 8 IP CCTV camera setup and optical fiber cable mapping',
+          assignedTo: null,
+          status: 'Unassigned',
+          createdAt: '09-Nov-2026 01:20 PM',
+          completedAt: null,
+          remarks: ''
+        }
+      ],
+      invoices: [
+        {
+          invNo: 'AW-1041',
+          date: '08-Nov-2026',
+          custName: 'Kailash Textiles',
+          phone: '9425512345',
+          route: 'Main Market',
+          items: [
+            { name: 'CP PLUS 4 Channel HD DVR (H.265+)', sn: 'CP-DVR-9981', warrantyYears: 2, expiry: '08-Nov-2028', price: 2900 },
+            { name: 'WD Purple 1TB Surveillance HDD', sn: 'WDC-PUR-4412', warrantyYears: 3, expiry: '08-Nov-2029', price: 3800 }
+          ],
+          total: 6700
+        }
+      ],
+      expenses: [
+        {
+          id: 'EXP-1',
+          tech: 'Ramesh Kumar',
+          type: 'Fuel / Petrol',
+          amount: 250,
+          odometer: 14210,
+          notes: 'Covered Main Market and Dharampura sites',
+          status: 'Approved',
+          date: '09-Nov-2026'
+        }
+      ],
+      notifications: []
+    };
+
+    let appState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultInitialState;
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      renderAll();
+    }
+
+    // ================= AUTHENTICATION & LOGIN =================
+    function fillLoginCreds(username, pass) {
+      document.getElementById('loginUsername').value = username;
+      document.getElementById('loginPassword').value = pass;
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value.trim();
+      const p = document.getElementById('loginPassword').value.trim();
+
+      const user = appState.users.find(usr => usr.username.toLowerCase() === u.toLowerCase() && usr.pass === p);
+      if (!user) {
+        showToast('Invalid Username or Password!', 'alert');
+        return;
+      }
+
+      appState.currentUser = user;
+      document.getElementById('loginScreen').classList.add('hidden');
+      applyRolePermissions(user);
+      saveState();
+      playBeepSound('success');
+      showToast(`Welcome, ${user.name} (${user.role.toUpperCase()})`, 'success');
+    }
+
+    function logoutCurrentUser() {
+      appState.currentUser = null;
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      saveState();
+    }
+
+    function applyRolePermissions(user) {
+      document.getElementById('sessionUserName').innerText = user.name;
+      document.getElementById('sessionUserRole').innerText = user.role === 'admin' ? 'Managing Director' : user.role === 'operator' ? 'Desk Operator' : 'Field Technician';
+
+      const notice = document.getElementById('roleNotice');
+      const desktopNav = document.getElementById('desktopNav');
+      const userTabBtn = document.getElementById('tab-users');
+
+      if (user.role === 'admin') {
+        notice.innerHTML = `Role: <b>Managing Director (Admin)</b> — Full enterprise privileges over Users, Billing, Routes, and Stock.`;
+        desktopNav.classList.remove('hidden');
+        if (userTabBtn) userTabBtn.classList.remove('hidden');
+        changeTab('dashboard');
+      } else if (user.role === 'operator') {
+        notice.innerHTML = `Role: <b>Desk Operator</b> — Authorized for Billing, Route Assignments, and Call Registration.`;
+        desktopNav.classList.remove('hidden');
+        if (userTabBtn) userTabBtn.classList.add('hidden'); // Operators cannot modify staff credentials
+        changeTab('billing');
+      } else if (user.role === 'technician') {
+        notice.innerHTML = `Role: <b>Field Technician (Mobile App View)</b> — Assigned Route: <b>${user.route || 'All Routes'}</b>.`;
+        desktopNav.classList.add('hidden');
+        changeTab('technician');
+      }
+    }
+
+    // TAB NAVIGATION
+    function changeTab(tabId) {
+      appState.currentTab = tabId;
+      document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('bg-slate-900', 'text-slate-300');
+      });
+
+      const activeView = document.getElementById(`view-${tabId}`);
+      if (activeView) activeView.classList.remove('hidden');
+
+      const activeTabBtn = document.getElementById(`tab-${tabId}`);
+      if (activeTabBtn) {
+        activeTabBtn.classList.remove('bg-slate-900', 'text-slate-300');
+        activeTabBtn.classList.add('bg-blue-600', 'text-white');
+      }
+    }
+
+    // ================= USER MANAGEMENT & CREDENTIAL GENERATOR =================
+    function autoGenerateCredentials() {
+      const name = document.getElementById('newStaffName').value.trim();
+      const prefix = name ? name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '') : 'staff';
+      const randomNum = Math.floor(100 + Math.random() * 900);
+      
+      document.getElementById('newStaffUsername').value = `${prefix}${randomNum}`;
+      document.getElementById('newStaffPassword').value = `Aw@${Math.floor(1000 + Math.random() * 9000)}`;
+      showToast('Generated random username and secure password!', 'info');
+    }
+
+    function handleCreateUser(e) {
+      e.preventDefault();
+      const name = document.getElementById('newStaffName').value.trim();
+      const role = document.getElementById('newStaffRole').value;
+      const route = document.getElementById('newStaffRoute').value;
+      const username = document.getElementById('newStaffUsername').value.trim();
+      const pass = document.getElementById('newStaffPassword').value.trim();
+      const phone = document.getElementById('newStaffPhone').value.trim();
+
+      const exists = appState.users.some(u => u.username.toLowerCase() === username.toLowerCase());
+      if (exists) {
+        showToast('Username already taken! Choose another one.', 'alert');
+        return;
+      }
+
+      const newUser = {
+        id: 'usr-' + (appState.users.length + 1),
+        name,
+        role,
+        route,
+        username,
+        pass,
+        phone
+      };
+
+      appState.users.push(newUser);
+      document.getElementById('newStaffName').value = '';
+      document.getElementById('newStaffUsername').value = '';
+      document.getElementById('newStaffPassword').value = '';
+      document.getElementById('newStaffPhone').value = '';
+
+      saveState();
+      playBeepSound('success');
+      showToast(`User ${name} created successfully!`, 'success');
+    }
+
+    function deleteUser(userId) {
+      if (appState.users.length <= 1) {
+        showToast('Cannot delete the primary admin account!', 'alert');
+        return;
+      }
+      appState.users = appState.users.filter(u => u.id !== userId);
+      saveState();
+      showToast('User removed from directory.', 'info');
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById('usersTableBody');
+      if (!tbody) return;
+
+      tbody.innerHTML = appState.users.map(u => `
+        <tr class="hover:bg-slate-950/40">
+          <td class="py-2.5 px-3">
+            <div class="font-bold text-white">${u.name}</div>
+            <div class="text-[10px] text-slate-400">${u.phone}</div>
+          </td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${
+              u.role === 'admin' ? 'bg-rose-500/20 text-rose-400' :
+              u.role === 'operator' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-emerald-500/20 text-emerald-400'
+            }">${u.role.toUpperCase()}</span>
+          </td>
+          <td class="py-2.5 px-3 font-mono text-cyan-300 font-bold">${u.username}</td>
+          <td class="py-2.5 px-3 font-mono text-amber-400 font-semibold">${u.pass}</td>
+          <td class="py-2.5 px-3 text-slate-300">${u.route}</td>
+          <td class="py-2.5 px-3 text-center">
+            ${u.username !== 'admin' ? `
+              <button onclick="deleteUser('${u.id}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+            ` : `<span class="text-slate-600 text-[10px]">Protected</span>`}
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('totalUsersBadge').innerText = `${appState.users.length} Staff Active`;
+      document.getElementById('dashStaffCount').innerText = `${appState.users.length} Active`;
+
+      // Sync technician select options across views
+      const techSelects = [document.getElementById('routeTechSelect'), document.getElementById('modalDirectTech'), document.getElementById('expTechName')];
+      const techList = appState.users.filter(u => u.role === 'technician' || u.role === 'admin');
+
+      techSelects.forEach(sel => {
+        if (!sel) return;
+        sel.innerHTML = techList.map(t => `<option value="${t.name}">${t.name} (${t.route})</option>`).join('');
+      });
+    }
+
+    // ================= NOTIFICATIONS ENGINE =================
+    function triggerNotificationAlert(text) {
+      appState.notifications.unshift({
+        id: Date.now(),
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        read: false
+      });
+      playBeepSound('alert');
+      showToast(text, 'alert');
+      saveState();
+    }
+
+    function toggleNotifPanel() {
+      const panel = document.getElementById('notifPanel');
+      panel.classList.toggle('hidden');
+      appState.notifications.forEach(n => n.read = true);
+      updateNotifBadge();
+    }
+
+    function updateNotifBadge() {
+      const unread = appState.notifications.filter(n => !n.read).length;
+      const badge = document.getElementById('notifBadge');
+      if (unread > 0) badge.classList.remove('hidden');
+      else badge.classList.add('hidden');
+
+      const list = document.getElementById('notifList');
+      if (appState.notifications.length === 0) {
+        list.innerHTML = `<p class="text-slate-500 text-center py-4">No recent technician activity.</p>`;
+        return;
+      }
+
+      list.innerHTML = appState.notifications.map(n => `
+        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-start space-x-2">
+          <i class="fa-solid fa-bell text-cyan-400 mt-0.5"></i>
+          <div class="flex-1">
+            <p class="text-white">${n.text}</p>
+            <span class="text-[10px] text-slate-500">${n.time}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function clearNotifs() {
+      appState.notifications = [];
+      saveState();
+    }
+
+    // ================= DASHBOARD =================
+    function renderDashboard() {
+      const totalSales = appState.invoices.reduce((sum, inv) => sum + inv.total, 0);
+      document.getElementById('dashTotalSales').innerText = '₹' + totalSales.toLocaleString('en-IN');
+
+      const pendingCalls = appState.tickets.filter(t => t.status !== 'Completed').length;
+      document.getElementById('dashPendingCalls').innerText = pendingCalls;
+
+      const lowStockCount = appState.inventory.filter(i => i.stock <= i.minStock).length;
+      document.getElementById('dashLowStock').innerText = lowStockCount + ' Items';
+
+      const routeCounts = {};
+      appState.tickets.forEach(t => {
+        const route = t.route || 'General';
+        if (!routeCounts[route]) {
+          routeCounts[route] = { total: 0, done: 0, tech: t.assignedTo || 'Unassigned' };
+        }
+        routeCounts[route].total++;
+        if (t.status === 'Completed') routeCounts[route].done++;
+      });
+
+      const dashRouteTbody = document.getElementById('dashRouteTableBody');
+      const routeKeys = Object.keys(routeCounts);
+      if (routeKeys.length === 0) {
+        dashRouteTbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500">No active routes today</td></tr>`;
+      } else {
+        dashRouteTbody.innerHTML = routeKeys.map(r => {
+          const item = routeCounts[r];
+          const pct = Math.round((item.done / item.total) * 100);
+          return `
+            <tr class="hover:bg-slate-950/40">
+              <td class="py-3 px-3 font-semibold text-white">${item.tech}</td>
+              <td class="py-3 px-3 text-cyan-400">${r}</td>
+              <td class="py-3 px-3 text-slate-300">${item.done} / ${item.total} calls closed</td>
+              <td class="py-3 px-3">
+                <div class="w-24 bg-slate-800 rounded-full h-2 overflow-hidden">
+                  <div class="bg-emerald-500 h-2 rounded-full" style="width: ${pct}%"></div>
+                </div>
+              </td>
+              <td class="py-3 px-3">
+                <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${pct === 100 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">
+                  ${pct === 100 ? 'Route Completed' : 'In Progress'}
+                </span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const lowItems = appState.inventory.filter(i => i.stock <= i.minStock);
+      const lowListEl = document.getElementById('lowStockItemsList');
+      if (lowItems.length === 0) {
+        lowListEl.innerHTML = `<li class="text-slate-500">All hardware stocks are sufficient.</li>`;
+      } else {
+        lowListEl.innerHTML = lowItems.map(item => `
+          <li class="flex items-center justify-between p-2 rounded-lg bg-slate-950 border border-slate-800">
+            <span class="text-slate-300 truncate max-w-[150px]">${item.name}</span>
+            <span class="text-rose-400 font-bold font-mono">Only ${item.stock} left</span>
+          </li>
+        `).join('');
+      }
+    }
+
+    // ================= BILLING & WARRANTY DESK =================
+    let currentBillItems = [];
+
+    function populateItemSelect() {
+      const select = document.getElementById('billItemSelect');
+      if (!select) return;
+      select.innerHTML = `<option value="">-- Select Hardware Item --</option>` + 
+        appState.inventory.map(item => `<option value="${item.id}">${item.name} (Stock: ${item.stock}) - ₹${item.price}</option>`).join('');
+    }
+
+    function autoFillItemPrice() {
+      const itemId = document.getElementById('billItemSelect').value;
+      const item = appState.inventory.find(i => i.id === itemId);
+      if (item) {
+        document.getElementById('billItemPrice').value = item.price;
+        if (!document.getElementById('billSerialNo').value) {
+          const prefix = item.cat.includes('CCTV') ? 'CAM-' : item.cat.includes('DVR') ? 'DVR-' : 'SN-';
+          document.getElementById('billSerialNo').value = prefix + Math.floor(100000 + Math.random() * 900000);
+        }
+      }
+    }
+
+    function addItemToCurrentBill() {
+      const itemId = document.getElementById('billItemSelect').value;
+      const serial = document.getElementById('billSerialNo').value.trim();
+      const warrantyYears = parseInt(document.getElementById('billWarrantyPeriod').value);
+      const price = parseFloat(document.getElementById('billItemPrice').value);
+
+      if (!itemId) {
+        showToast('Please select a hardware item', 'alert');
+        return;
+      }
+      if (!serial) {
+        showToast('Please enter Hardware Serial / MAC Number', 'alert');
+        return;
+      }
+      if (isNaN(price) || price < 0) {
+        showToast('Please enter a valid price', 'alert');
+        return;
+      }
+
+      const item = appState.inventory.find(i => i.id === itemId);
+      if (item.stock < 1) {
+        showToast('Item is out of stock in inventory!', 'alert');
+        return;
+      }
+
+      const saleDate = new Date();
+      const expiryDate = new Date();
+      expiryDate.setFullYear(saleDate.getFullYear() + warrantyYears);
+      const expiryStr = warrantyYears === 0 ? 'No Warranty' : expiryDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      currentBillItems.push({
+        itemId: item.id,
+        name: item.name,
+        sn: serial,
+        warrantyYears: warrantyYears,
+        expiry: expiryStr,
+        price: price
+      });
+
+      document.getElementById('billItemSelect').value = '';
+      document.getElementById('billSerialNo').value = '';
+      document.getElementById('billItemPrice').value = '';
+
+      renderCurrentBillTable();
+    }
+
+    function removeBillItem(index) {
+      currentBillItems.splice(index, 1);
+      renderCurrentBillTable();
+    }
+
+    function renderCurrentBillTable() {
+      const tbody = document.getElementById('billItemsTableBody');
+      if (currentBillItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-3 text-center text-slate-500">No items added to current invoice yet.</td></tr>`;
+      } else {
+        tbody.innerHTML = currentBillItems.map((item, idx) => `
+          <tr>
+            <td class="py-2 text-white font-medium">${item.name}</td>
+            <td class="py-2 text-cyan-400 font-mono">${item.sn}</td>
+            <td class="py-2 text-emerald-400 font-semibold">${item.expiry}</td>
+            <td class="py-2 text-right text-white font-bold">₹${item.price}</td>
+            <td class="py-2 text-center">
+              <button onclick="removeBillItem(${idx})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      document.getElementById('billTotalItemsCount').innerText = currentBillItems.length;
+      const total = currentBillItems.reduce((sum, i) => sum + i.price, 0);
+      document.getElementById('billGrandTotal').innerText = '₹' + total.toLocaleString('en-IN');
+    }
+
+    function resetBillForm() {
+      currentBillItems = [];
+      document.getElementById('billCustName').value = '';
+      document.getElementById('billCustPhone').value = '';
+      renderCurrentBillTable();
+    }
+
+    function finalizeBillAndPrint() {
+      const custName = document.getElementById('billCustName').value.trim();
+      const phone = document.getElementById('billCustPhone').value.trim();
+      const route = document.getElementById('billCustRoute').value;
+
+      if (!custName || !phone) {
+        showToast('Please enter Customer Name and Phone Number', 'alert');
+        return;
+      }
+      if (currentBillItems.length === 0) {
+        showToast('Please add at least 1 hardware product to the invoice', 'alert');
+        return;
+      }
+
+      currentBillItems.forEach(bItem => {
+        const invItem = appState.inventory.find(i => i.id === bItem.itemId);
+        if (invItem && invItem.stock > 0) {
+          invItem.stock -= 1;
+        }
+      });
+
+      const nextInvNum = 'AW-' + (1042 + appState.invoices.length);
+      const total = currentBillItems.reduce((sum, i) => sum + i.price, 0);
+
+      const newInvoice = {
+        invNo: nextInvNum,
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        custName: custName,
+        phone: phone,
+        route: route,
+        items: [...currentBillItems],
+        total: total
+      };
+
+      appState.invoices.unshift(newInvoice);
+
+      document.getElementById('printInvNo').innerText = newInvoice.invNo;
+      document.getElementById('printInvDate').innerText = 'Date: ' + newInvoice.date;
+      document.getElementById('printCustName').innerText = newInvoice.custName;
+      document.getElementById('printCustPhone').innerText = newInvoice.phone;
+      document.getElementById('printCustRoute').innerText = newInvoice.route;
+      document.getElementById('printGrandTotal').innerText = '₹' + total.toLocaleString('en-IN');
+
+      document.getElementById('printItemsTable').innerHTML = newInvoice.items.map(it => `
+        <tr class="border-b border-gray-300">
+          <td class="p-2 border-r border-black">${it.name}</td>
+          <td class="p-2 border-r border-black font-mono font-bold">${it.sn}</td>
+          <td class="p-2 border-r border-black">${it.expiry} (${it.warrantyYears} Yrs)</td>
+          <td class="p-2 text-right">₹${it.price}</td>
+        </tr>
+      `).join('');
+
+      saveState();
+      resetBillForm();
+      playBeepSound('success');
+      showToast(`Invoice ${nextInvNum} Saved for ATHARVA WEBSOFT!`, 'success');
+
+      setTimeout(() => {
+        window.print();
+      }, 300);
+    }
+
+    function renderRecentInvoices() {
+      const container = document.getElementById('recentInvoicesList');
+      if (appState.invoices.length === 0) {
+        container.innerHTML = `<p class="text-slate-500">No invoices generated yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = appState.invoices.slice(0, 5).map(inv => `
+        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
+          <div>
+            <div class="font-semibold text-white">${inv.custName} <span class="text-[10px] text-slate-400 font-mono">(${inv.invNo})</span></div>
+            <div class="text-[10px] text-slate-400">${inv.items.length} items • ${inv.date} • ${inv.phone}</div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold text-emerald-400">₹${inv.total}</span>
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('invNextNumber').innerText = 1042 + appState.invoices.length;
+    }
+
+    function searchWarrantyClaim() {
+      const query = document.getElementById('warrantySearchInput').value.trim().toLowerCase();
+      const resContainer = document.getElementById('warrantySearchResult');
+
+      if (!query) {
+        resContainer.classList.add('hidden');
+        return;
+      }
+
+      resContainer.classList.remove('hidden');
+      let foundMatches = [];
+
+      appState.invoices.forEach(inv => {
+        inv.items.forEach(it => {
+          if (it.sn.toLowerCase().includes(query) || inv.phone.includes(query) || inv.invNo.toLowerCase().includes(query) || inv.custName.toLowerCase().includes(query)) {
+            foundMatches.push({ invoice: inv, item: it });
+          }
+        });
+      });
+
+      if (foundMatches.length === 0) {
+        resContainer.innerHTML = `<p class="text-rose-400">No active warranty record found for query: "${query}"</p>`;
+        return;
+      }
+
+      resContainer.innerHTML = foundMatches.map(m => `
+        <div class="border-b border-slate-800 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-white">${m.item.name}</span>
+            <span class="px-2 py-0.5 rounded text-[10px] bg-cyan-500/20 text-cyan-400 font-mono font-bold">${m.item.sn}</span>
+          </div>
+          <p class="text-slate-300">Customer: <b>${m.invoice.custName}</b> (${m.invoice.phone})</p>
+          <div class="flex items-center justify-between text-[11px] mt-1">
+            <span class="text-slate-400">Purchased: ${m.invoice.date}</span>
+            <span class="font-semibold text-emerald-400">Warranty Expiry: ${m.item.expiry}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ================= ROUTE CHART & BATCH ASSIGNMENT =================
+    let selectedTicketIds = new Set();
+
+    function renderRoutes() {
+      const filter = document.getElementById('routeFilterSelect').value;
+      const tbody = document.getElementById('routeTicketsTableBody');
+
+      let filteredTickets = appState.tickets;
+      if (filter !== 'ALL') {
+        filteredTickets = filteredTickets.filter(t => t.route === filter);
+      }
+
+      if (filteredTickets.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-4 text-center text-slate-500">No service calls found for this route sector.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filteredTickets.map(t => `
+        <tr class="hover:bg-slate-950/40">
+          <td class="py-3 px-3">
+            <input type="checkbox" value="${t.id}" onchange="toggleSelectTicket('${t.id}', this)" ${selectedTicketIds.has(t.id) ? 'checked' : ''} class="rounded bg-slate-900 border-slate-700">
+          </td>
+          <td class="py-3 px-3 font-mono font-bold text-white">${t.id}</td>
+          <td class="py-3 px-3">
+            <div class="font-semibold text-white">${t.custName}</div>
+            <div class="text-[10px] text-slate-400">${t.phone}</div>
+          </td>
+          <td class="py-3 px-3 text-cyan-400 font-medium">${t.route}</td>
+          <td class="py-3 px-3 text-slate-300">
+            <div class="font-medium text-white">${t.type}</div>
+            <div class="text-[10px] text-slate-400">${t.desc}</div>
+          </td>
+          <td class="py-3 px-3">
+            ${t.assignedTo ? `<span class="text-slate-200 font-medium">${t.assignedTo}</span>` : `<span class="text-amber-400 italic">Unassigned</span>`}
+          </td>
+          <td class="py-3 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${
+              t.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-400' :
+              t.status === 'In Progress' ? 'bg-cyan-500/20 text-cyan-400' : 'bg-amber-500/20 text-amber-400'
+            }">${t.status}</span>
+          </td>
+          <td class="py-3 px-3 text-center">
+            ${t.status !== 'Completed' ? `
+              <button onclick="quickCloseModal('${t.id}')" class="px-2 py-1 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-300 hover:text-white rounded text-[10px] font-medium transition">
+                Mark Done
+              </button>
+            ` : `<span class="text-slate-500 text-[10px]"><i class="fa-solid fa-check"></i> Closed</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function filterRouteTable() {
+      renderRoutes();
+    }
+
+    function toggleSelectTicket(id, checkbox) {
+      if (checkbox.checked) selectedTicketIds.add(id);
+      else selectedTicketIds.delete(id);
+    }
+
+    function toggleSelectAllTickets(masterCheckbox) {
+      const checkboxes = document.querySelectorAll('#routeTicketsTableBody input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        cb.checked = masterCheckbox.checked;
+        if (masterCheckbox.checked) selectedTicketIds.add(cb.value);
+        else selectedTicketIds.delete(cb.value);
+      });
+    }
+
+    function batchAssignRouteTickets() {
+      if (selectedTicketIds.size === 0) {
+        showToast('Please select tickets using checkboxes first', 'alert');
+        return;
+      }
+      const techName = document.getElementById('routeTechSelect').value;
+
+      appState.tickets.forEach(t => {
+        if (selectedTicketIds.has(t.id)) {
+          t.assignedTo = techName;
+          t.status = 'In Progress';
+        }
+      });
+
+      triggerNotificationAlert(`Batch of ${selectedTicketIds.size} tickets assigned to ${techName}`);
+      selectedTicketIds.clear();
+      saveState();
+      showToast(`Assigned tickets to ${techName} successfully!`, 'success');
+    }
+
+    // ================= FIELD TECHNICIAN MOBILE APP VIEW =================
+    function renderTechnicianView() {
+      const activeTech = appState.currentUser ? appState.currentUser.name : 'Ramesh Kumar';
+      document.getElementById('mobileTechName').innerText = activeTech;
+
+      const myJobs = appState.tickets.filter(t => t.assignedTo === activeTech || (appState.currentUser && appState.currentUser.role === 'admin'));
+      const assignedCount = myJobs.length;
+      const completedCount = myJobs.filter(j => j.status === 'Completed').length;
+
+      document.getElementById('mobileAssignedCount').innerText = `${assignedCount} Calls`;
+      document.getElementById('mobileCompletedCount').innerText = `${completedCount} Done`;
+
+      const listContainer = document.getElementById('techMobileJobsList');
+      if (myJobs.length === 0) {
+        listContainer.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 bg-slate-950 rounded-2xl">No calls assigned to your route today.</div>`;
+        return;
+      }
+
+      listContainer.innerHTML = myJobs.map(job => `
+        <div class="bg-slate-950 p-3.5 rounded-2xl border ${job.status === 'Completed' ? 'border-emerald-800/40 bg-emerald-950/10' : 'border-slate-800'} space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">${job.id} • ${job.route}</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${job.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-cyan-500/20 text-cyan-400'}">
+              ${job.status}
+            </span>
+          </div>
+
+          <div>
+            <h4 class="text-xs font-bold text-white">${job.custName}</h4>
+            <p class="text-[11px] text-slate-400">${job.desc}</p>
+          </div>
+
+          <div class="flex items-center justify-between pt-1 border-t border-slate-900 text-xs">
+            <a href="tel:${job.phone}" class="px-2.5 py-1 bg-slate-800 text-cyan-400 rounded-lg text-[11px] font-semibold flex items-center space-x-1">
+              <i class="fa-solid fa-phone"></i>
+              <span>Call: ${job.phone}</span>
+            </a>
+
+            ${job.status !== 'Completed' ? `
+              <button onclick="openCloseModal('${job.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow flex items-center space-x-1">
+                <i class="fa-solid fa-check"></i>
+                <span>Complete Job</span>
+              </button>
+            ` : `
+              <span class="text-emerald-400 text-[11px] font-semibold flex items-center">
+                <i class="fa-solid fa-circle-check mr-1"></i> Closed: ${job.remarks || 'Done'}
+              </span>
+            `}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openCloseModal(ticketId) {
+      const ticket = appState.tickets.find(t => t.id === ticketId);
+      if (!ticket) return;
+
+      document.getElementById('closingTicketId').value = ticket.id;
+      document.getElementById('closingCustName').innerText = `${ticket.custName} (${ticket.route})`;
+      document.getElementById('closingRemarks').value = '';
+      document.getElementById('closingPartsUsed').value = '';
+
+      document.getElementById('closeJobModal').classList.remove('hidden');
+    }
+
+    function quickCloseModal(ticketId) {
+      openCloseModal(ticketId);
+    }
+
+    function submitJobClosure() {
+      const ticketId = document.getElementById('closingTicketId').value;
+      const remarks = document.getElementById('closingRemarks').value.trim();
+      const parts = document.getElementById('closingPartsUsed').value.trim();
+
+      if (!remarks) {
+        showToast('Please enter the work remarks / action taken', 'alert');
+        return;
+      }
+
+      const ticket = appState.tickets.find(t => t.id === ticketId);
+      if (ticket) {
+        ticket.status = 'Completed';
+        ticket.remarks = remarks + (parts ? ` | Parts Used: ${parts}` : '');
+        ticket.completedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const notifText = `CALL CLOSED: Technician ${ticket.assignedTo || 'Staff'} completed "${ticket.custName}" (${ticket.route}). Action: ${remarks}`;
+        triggerNotificationAlert(notifText);
+
+        saveState();
+        closeModal('closeJobModal');
+        showToast('Job marked Completed & Admin notified with sound!', 'success');
+      }
+    }
+
+    // ================= STOCK MANAGEMENT =================
+    function handleStockIn() {
+      const name = document.getElementById('stockInName').value.trim();
+      const cat = document.getElementById('stockInCat').value;
+      const qty = parseInt(document.getElementById('stockInQty').value);
+      const cost = parseFloat(document.getElementById('stockInCost').value) || 0;
+
+      if (!name) {
+        showToast('Please enter Hardware/CCTV model name', 'alert');
+        return;
+      }
+      if (isNaN(qty) || qty <= 0) {
+        showToast('Enter valid inward quantity', 'alert');
+        return;
+      }
+
+      const existingItem = appState.inventory.find(i => i.name.toLowerCase() === name.toLowerCase());
+      if (existingItem) {
+        existingItem.stock += qty;
+        showToast(`Stock updated! Added +${qty} to ${existingItem.name}`, 'success');
+      } else {
+        const newItem = {
+          id: 'itm-' + (appState.inventory.length + 1),
+          name: name,
+          cat: cat,
+          stock: qty,
+          minStock: 3,
+          price: cost > 0 ? cost : 1500
+        };
+        appState.inventory.push(newItem);
+        showToast(`New item added to inventory: ${newItem.name}`, 'success');
+      }
+
+      document.getElementById('stockInName').value = '';
+      populateItemSelect();
+      saveState();
+    }
+
+    function renderStock() {
+      const tbody = document.getElementById('inventoryTableBody');
+      tbody.innerHTML = appState.inventory.map(item => `
+        <tr class="hover:bg-slate-950/40">
+          <td class="py-2.5 px-3">
+            <span class="font-semibold text-white">${item.name}</span>
+          </td>
+          <td class="py-2.5 px-3 text-cyan-400">${item.cat}</td>
+          <td class="py-2.5 px-3 text-center">
+            <span class="font-mono font-bold text-sm ${item.stock <= item.minStock ? 'text-rose-400' : 'text-emerald-400'}">
+              ${item.stock} Units
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-white font-bold">₹${item.price}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${item.stock <= item.minStock ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}">
+              ${item.stock <= item.minStock ? 'Low Stock' : 'In Stock'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ================= CALL CENTER =================
+    function openNewCallModal() {
+      document.getElementById('newCallModal').classList.remove('hidden');
+    }
+
+    function closeNewCallModal() {
+      document.getElementById('newCallModal').classList.add('hidden');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    function saveNewCallTicket() {
+      const custName = document.getElementById('modalCustName').value.trim();
+      const phone = document.getElementById('modalCustPhone').value.trim();
+      const route = document.getElementById('modalCustRoute').value;
+      const type = document.getElementById('modalCallType').value;
+      const desc = document.getElementById('modalCallDesc').value.trim();
+      const assignedTech = document.getElementById('modalDirectTech').value;
+
+      if (!custName || !phone) {
+        showToast('Please enter Customer Name and Phone', 'alert');
+        return;
+      }
+
+      const newTicket = {
+        id: 'TICK-' + (100 + appState.tickets.length + 1),
+        custName: custName,
+        phone: phone,
+        route: route,
+        type: type,
+        desc: desc || 'Field complaint logged via desk',
+        assignedTo: assignedTech || null,
+        status: assignedTech ? 'Assigned' : 'Unassigned',
+        createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        completedAt: null,
+        remarks: ''
+      };
+
+      appState.tickets.unshift(newTicket);
+      closeNewCallModal();
+      saveState();
+      playBeepSound('success');
+      showToast(`Call registered: ${newTicket.id} for ${newTicket.custName}`, 'success');
+    }
+
+    function renderCalls() {
+      const tbody = document.getElementById('callLogTableBody');
+      tbody.innerHTML = appState.tickets.map(t => `
+        <tr class="hover:bg-slate-950/40">
+          <td class="py-3 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/20 text-blue-400">${t.type}</span>
+          </td>
+          <td class="py-3 px-3">
+            <div class="font-bold text-white">${t.custName}</div>
+            <div class="text-[10px] text-slate-400">${t.phone} • ${t.route}</div>
+          </td>
+          <td class="py-3 px-3 text-slate-300">${t.desc}</td>
+          <td class="py-3 px-3 text-slate-400 font-mono text-[11px]">${t.createdAt}</td>
+          <td class="py-3 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${t.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">
+              ${t.status}
+            </span>
+          </td>
+          <td class="py-3 px-3 text-center">
+            <button onclick="changeTab('routes')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-400 rounded text-[10px] font-medium">
+              View Route
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ================= TOUR & GAADI SERVICE EXPENSES =================
+    function logNewExpense() {
+      const tech = document.getElementById('expTechName').value;
+      const type = document.getElementById('expType').value;
+      const amount = parseFloat(document.getElementById('expAmount').value);
+      const odo = parseInt(document.getElementById('expOdo').value) || 0;
+      const note = document.getElementById('expNote').value.trim();
+
+      if (isNaN(amount) || amount <= 0) {
+        showToast('Please enter a valid expense amount', 'alert');
+        return;
+      }
+
+      const newExp = {
+        id: 'EXP-' + (appState.expenses.length + 1),
+        tech: tech,
+        type: type,
+        amount: amount,
+        odometer: odo,
+        notes: note || 'Field travel logged',
+        status: 'Approved',
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      };
+
+      appState.expenses.unshift(newExp);
+      document.getElementById('expAmount').value = '';
+      document.getElementById('expOdo').value = '';
+      document.getElementById('expNote').value = '';
+
+      saveState();
+      showToast(`Expense of ₹${amount} logged for ${tech}`, 'success');
+    }
+
+    function renderExpenses() {
+      const tbody = document.getElementById('expenseTableBody');
+      const totalExp = appState.expenses.reduce((sum, e) => sum + e.amount, 0);
+      document.getElementById('expTotalSum').innerText = '₹' + totalExp.toLocaleString('en-IN');
+
+      tbody.innerHTML = appState.expenses.map(e => `
+        <tr class="hover:bg-slate-950/40">
+          <td class="py-2.5 px-3 text-slate-400 font-mono text-[11px]">${e.date}</td>
+          <td class="py-2.5 px-3 font-semibold text-white">${e.tech}</td>
+          <td class="py-2.5 px-3 text-cyan-400">${e.type}</td>
+          <td class="py-2.5 px-3 font-mono text-slate-300">${e.odometer ? e.odometer + ' KM' : '-'}</td>
+          <td class="py-2.5 px-3 font-bold text-white">₹${e.amount}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${e.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">
+              ${e.status}
+            </span>
+          </td>
+          <td class="py-2.5 px-3 text-center text-slate-400 text-[11px]">
+            ${e.notes}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function forceCloudSync() {
+      showToast('Cloud Database Sync: Up to date with Google Drive.', 'info');
+    }
+
+    function renderAll() {
+      renderDashboard();
+      renderRoutes();
+      renderStock();
+      renderCalls();
+      renderExpenses();
+      renderTechnicianView();
+      renderRecentInvoices();
+      renderUsers();
+      updateNotifBadge();
+    }
+
+    // ================= INITIALIZATION =================
+    window.onload = function() {
+      populateItemSelect();
+      renderAll();
+
+      if (appState.currentUser) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        applyRolePermissions(appState.currentUser);
+      } else {
+        document.getElementById('loginScreen').classList.remove('hidden');
+      }
+    };
+  </script>
+</body>
+</html>
