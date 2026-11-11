@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATHARVA WEBSOFT - Enterprise ERP & Field Service Manager</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#022c22">
+
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <!-- Excel / CSV Reader Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', 'Noto Sans Devanagari', sans-serif; }
+    .badge-pulse { animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1); }
+    @keyframes pulse-ring { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.08); } }
+
+    /* Clean A4 Print Layout */
+    @media print {
+      html, body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      header, main, nav, footer, #loginScreen, #newCallModal, #closeJobModal, #toastContainer, .no-print, [class*="fixed"] {
+        display: none !important;
+        visibility: hidden !important;
+      }
+      #printableArea {
+        display: block !important;
+        visibility: visible !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 15px !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: none !important;
+      }
+      #printableArea * {
+        visibility: visible !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-emerald-950/95 text-emerald-50 min-h-screen flex flex-col antialiased select-none pb-16 sm:pb-0">
+
+  <!-- ================= AUTHENTICATION MODAL ================= -->
+  <div id="loginScreen" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-emerald-950 border border-emerald-800/80 rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-emerald-600 via-green-600 to-teal-400 flex items-center justify-center shadow-xl shadow-emerald-500/20">
+          <i class="fa-solid fa-shield-halved text-white text-2xl"></i>
+        </div>
+        <h2 class="text-lg font-extrabold text-white tracking-wide uppercase">ATHARVA WEBSOFT</h2>
+        <p class="text-xs text-emerald-300/80">Enterprise Cloud ERP • Route Dispatch • Payroll</p>
+      </div>
+
+      <div class="p-3 bg-black/40 rounded-2xl border border-emerald-900/60 space-y-2">
+        <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">One-Click Test Accounts:</span>
+        <div class="grid grid-cols-3 gap-2 text-[10px]">
+          <button onclick="fillLoginCreds('admin', 'admin123')" class="p-2 bg-emerald-900/40 hover:bg-emerald-800/60 text-emerald-300 rounded-xl font-mono text-center border border-emerald-700/60">
+            <b>Admin (MD)</b><br>admin
+          </button>
+          <button onclick="fillLoginCreds('operator', 'desk123')" class="p-2 bg-emerald-900/40 hover:bg-emerald-800/60 text-teal-300 rounded-xl font-mono text-center border border-emerald-700/60">
+            <b>Operator</b><br>operator
+          </button>
+          <button onclick="fillLoginCreds('ramesh', 'tech123')" class="p-2 bg-emerald-900/40 hover:bg-emerald-800/60 text-green-300 rounded-xl font-mono text-center border border-emerald-700/60">
+            <b>Tech</b><br>ramesh
+          </button>
+        </div>
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-emerald-300 mb-1">Username / Employee ID</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-emerald-500">
+              <i class="fa-solid fa-user"></i>
+            </span>
+            <input type="text" id="loginUsername" required placeholder="Enter username" class="w-full pl-9 pr-3 py-2.5 bg-black/40 border border-emerald-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-emerald-300 mb-1">Password</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-emerald-500">
+              <i class="fa-solid fa-lock"></i>
+            </span>
+            <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 bg-black/40 border border-emerald-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold rounded-xl text-xs shadow-lg transition">
+          Secure Login & Punch In &rarr;
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= TOP APP BAR ================= -->
+  <header class="bg-emerald-950 border-b border-emerald-800/60 sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-green-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid fa-video text-white text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-white leading-tight uppercase">ATHARVA WEBSOFT</h1>
+            <span class="hidden md:inline text-[9px] font-bold bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">GREEN ERP</span>
+          </div>
+          <p class="text-[11px] text-emerald-300/70">IT Solutions • CCTV Surveillance • Cloud ERP</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <!-- Live Notifications -->
+        <div class="relative">
+          <button id="notifBtn" onclick="toggleNotifPanel()" class="p-2.5 rounded-xl bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 relative transition">
+            <i class="fa-regular fa-bell text-lg"></i>
+            <span id="notifBadge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-green-400 rounded-full badge-pulse"></span>
+          </button>
+          <div id="notifPanel" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-emerald-950 border border-emerald-800 rounded-2xl shadow-2xl p-4 z-50">
+            <div class="flex items-center justify-between pb-3 border-b border-emerald-800">
+              <span class="text-xs font-semibold uppercase tracking-wider text-emerald-300">Field Activity Alert</span>
+              <button onclick="clearNotifs()" class="text-xs text-emerald-400 hover:underline">Clear</button>
+            </div>
+            <div id="notifList" class="mt-3 space-y-2 max-h-72 overflow-y-auto pr-1 text-xs">
+              <p class="text-emerald-400/60 text-center py-4">No recent activity.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile & Logout -->
+        <div class="flex items-center space-x-2 pl-2 border-l border-emerald-800">
+          <div class="text-right hidden sm:block">
+            <div class="text-xs font-bold text-white" id="sessionUserName">User</div>
+            <span class="text-[10px] text-emerald-300 font-mono" id="sessionUserRole">Role</span>
+          </div>
+          <button onclick="logoutCurrentUser()" title="Sign Out & Punch Out" class="p-2.5 rounded-xl bg-emerald-900/60 hover:bg-rose-900/50 text-emerald-200 hover:text-rose-300 border border-emerald-800 transition">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full flex flex-col">
+
+    <!-- Role Status & Cloud Banner -->
+    <div id="roleAlert" class="mb-5 p-3 rounded-2xl bg-emerald-900/30 border border-emerald-700/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-emerald-200">
+      <div class="flex items-center space-x-2.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span id="roleNotice">Role: <b>Managing Director (Admin)</b> — Full enterprise privileges.</span>
+      </div>
+      <div class="flex items-center space-x-2 text-[11px] font-mono text-emerald-300/80">
+        <span id="syncIndicator"><i class="fa-solid fa-cloud-arrow-up text-emerald-400 mr-1"></i> Cloud Synced</span>
+        <button onclick="fetchFromGoogleSheet()" class="px-2 py-0.5 rounded bg-emerald-900/60 hover:bg-emerald-800 text-emerald-300 text-[10px] flex items-center space-x-1 border border-emerald-700/50">
+          <i class="fa-solid fa-rotate" id="syncSpinner"></i>
+          <span>Sync Now</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- TABS NAVIGATION (Green Theme) -->
+    <div id="desktopNav" class="flex flex-wrap gap-2 pb-4 border-b border-emerald-900/80 mb-6">
+      <button onclick="changeTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white flex items-center space-x-2 shadow-md">
+        <i class="fa-solid fa-chart-pie"></i><span>Dashboard</span>
+      </button>
+      <button onclick="changeTab('billing')" id="tab-billing" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-receipt"></i><span>Billing & Warranty</span>
+      </button>
+      <button onclick="changeTab('contacts')" id="tab-contacts" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-address-book"></i><span>Contacts & Bulk Excel</span>
+      </button>
+      <button onclick="changeTab('routes')" id="tab-routes" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-route"></i><span>Route Dispatch</span>
+      </button>
+      <button onclick="changeTab('stock')" id="tab-stock" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-boxes-stacked"></i><span>Stock Ledger</span>
+      </button>
+      <button onclick="changeTab('payroll')" id="tab-payroll" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-user-clock"></i><span>Attendance & Salary</span>
+      </button>
+      <button onclick="changeTab('calls')" id="tab-calls" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-phone-volume"></i><span>Call Register</span>
+      </button>
+      <button onclick="changeTab('expenses')" id="tab-expenses" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-gas-pump"></i><span>Tour & Vehicle</span>
+      </button>
+      <button onclick="changeTab('users')" id="tab-users" class="tab-btn px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-950 hover:bg-emerald-900 text-emerald-300 flex items-center space-x-2 border border-emerald-800">
+        <i class="fa-solid fa-users-gear"></i><span>Staff Logins</span>
+      </button>
+    </div>
+
+    <!-- VIEW 1: DASHBOARD -->
+    <section id="view-dashboard" class="view-panel space-y-6">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-emerald-950/80 border border-emerald-800/80 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-emerald-300">Total Billed Revenue</div>
+          <div class="text-2xl font-bold text-white mt-1" id="dashTotalSales">₹0</div>
+          <div class="text-[11px] text-emerald-400 mt-1 flex items-center"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Live Computed</div>
+        </div>
+        <div class="bg-emerald-950/80 border border-emerald-800/80 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-emerald-300">Open Tickets</div>
+          <div class="text-2xl font-bold text-amber-300 mt-1" id="dashPendingCalls">0</div>
+          <div class="text-[11px] text-amber-300/80 mt-1">Pending Field Closure</div>
+        </div>
+        <div class="bg-emerald-950/80 border border-emerald-800/80 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-emerald-300">Registered Staff</div>
+          <div class="text-2xl font-bold text-teal-300 mt-1" id="dashStaffCount">0 Active</div>
+          <div class="text-[11px] text-teal-300/80 mt-1">Auto-Attendance Linked</div>
+        </div>
+        <div class="bg-emerald-950/80 border border-emerald-800/80 p-4 rounded-2xl relative overflow-hidden">
+          <div class="text-xs font-medium text-emerald-300">Low Stock Alert</div>
+          <div class="text-2xl font-bold text-rose-400 mt-1" id="dashLowStock">0 Items</div>
+          <div class="text-[11px] text-rose-400/80 mt-1">CCTV / Hardware Shortage</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-semibold text-white">Live Route Assignments (आज का रूट चार्ट)</h2>
+              <p class="text-xs text-emerald-300/70">Technicians visiting client locations today</p>
+            </div>
+            <button onclick="changeTab('routes')" class="text-xs text-emerald-400 hover:text-emerald-300 font-medium">Assign Route &rarr;</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-3 px-3">Technician</th>
+                  <th class="py-3 px-3">Route Sector</th>
+                  <th class="py-3 px-3">Calls Assigned</th>
+                  <th class="py-3 px-3">Progress</th>
+                  <th class="py-3 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="dashRouteTableBody" class="divide-y divide-emerald-900/60"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5">
+            <h3 class="text-sm font-semibold text-white mb-3 flex items-center justify-between">
+              <span>Low Stock Alerts</span>
+              <span class="text-[10px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded border border-rose-500/30">Action Required</span>
+            </h3>
+            <ul id="lowStockItemsList" class="space-y-2 text-xs"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: BILLING & WARRANTY DESK -->
+    <section id="view-billing" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-emerald-800 pb-3">
+            <div>
+              <h2 class="text-base font-semibold text-white">Create Tax Invoice & Warranty Card</h2>
+              <p class="text-xs text-emerald-300/70">ATHARVA WEBSOFT Official Sales Desk</p>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-full font-mono">Invoice #AW-<span id="invNextNumber">1042</span></span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-emerald-300 mb-1">Customer / Firm Name *</label>
+              <input type="text" id="billCustName" placeholder="e.g. Bastar Rice Mill / Rakesh" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-emerald-300 mb-1">Phone Number (10 Digit) *</label>
+              <input type="tel" id="billCustPhone" placeholder="9876543210" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-emerald-300 mb-1">City / Route Sector</label>
+              <select id="billCustRoute" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400">
+                <option value="Main Market">Main Market (मुख्य बाज़ार)</option>
+                <option value="Industrial Area">Industrial Area / Nagarnar</option>
+                <option value="Geedam Road">Geedam Road</option>
+                <option value="Dharampura Colony">Dharampura Colony</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-black/40 p-4 rounded-xl border border-emerald-800/80 space-y-3">
+            <span class="text-xs font-semibold text-emerald-300">Add Product & Serial / Warranty</span>
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+              <div class="sm:col-span-4">
+                <select id="billItemSelect" onchange="autoFillItemPrice()" class="w-full bg-emerald-950 border border-emerald-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-400">
+                  <option value="">-- Select Hardware Item --</option>
+                </select>
+              </div>
+              <div class="sm:col-span-3">
+                <input type="text" id="billSerialNo" placeholder="Serial / MAC No" class="w-full bg-emerald-950 border border-emerald-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-400">
+              </div>
+              <div class="sm:col-span-2">
+                <select id="billWarrantyPeriod" class="w-full bg-emerald-950 border border-emerald-700 rounded-lg px-2.5 py-1.5 text-xs text-emerald-300 focus:outline-none focus:border-emerald-400">
+                  <option value="1">1 Year Waranty</option>
+                  <option value="2">2 Year Waranty</option>
+                  <option value="3">3 Year Waranty</option>
+                  <option value="0">No Warranty</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2">
+                <input type="number" id="billItemPrice" placeholder="Price (₹)" class="w-full bg-emerald-950 border border-emerald-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-400">
+              </div>
+              <div class="sm:col-span-1">
+                <button onclick="addItemToCurrentBill()" class="w-full h-full bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white text-xs font-bold transition flex items-center justify-center">
+                  <i class="fa-solid fa-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto mt-2">
+              <table class="w-full text-left text-xs">
+                <thead class="text-emerald-400 border-b border-emerald-800">
+                  <tr>
+                    <th class="py-2">Item</th>
+                    <th class="py-2">Serial No.</th>
+                    <th class="py-2">Warranty Expiry</th>
+                    <th class="py-2 text-right">Price</th>
+                    <th class="py-2 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="billItemsTableBody" class="divide-y divide-emerald-900/60"></tbody>
+              </table>
+            </div>
+
+            <div class="flex justify-between items-center pt-2 border-t border-emerald-800 text-xs">
+              <span class="text-emerald-300">Total Items: <b id="billTotalItemsCount" class="text-white">0</b></span>
+              <div class="text-right">
+                <span class="text-emerald-300">Grand Total: </span>
+                <span class="text-base font-bold text-emerald-400" id="billGrandTotal">₹0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-end space-x-3 pt-2">
+            <button onclick="resetBillForm()" class="px-4 py-2 bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 text-xs font-semibold rounded-xl">Clear</button>
+            <button onclick="finalizeBillAndPrint()" id="btnSaveInvoice" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-emerald-600/30 flex items-center space-x-2">
+              <i class="fa-solid fa-print"></i>
+              <span>Save & Generate Invoice</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Sales & Past Invoices List with WhatsApp Share & Print Anytime -->
+        <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-white">Sales & Invoice History</h3>
+            <span class="text-[10px] bg-emerald-900/60 text-emerald-300 px-2 py-0.5 rounded border border-emerald-700/50">Print Anytime</span>
+          </div>
+
+          <div class="relative">
+            <input type="text" id="invoiceSearchInput" oninput="renderRecentInvoices()" placeholder="Search Bill No / Customer / Phone..." class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400">
+            <i class="fa-solid fa-magnifying-glass absolute right-3 top-3 text-emerald-500 text-xs"></i>
+          </div>
+
+          <div id="recentInvoicesList" class="space-y-2.5 max-h-[460px] overflow-y-auto text-xs pr-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: CONTACTS & BULK EXCEL IMPORT -->
+    <section id="view-contacts" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <h2 class="text-base font-semibold text-white flex items-center space-x-2">
+            <i class="fa-solid fa-user-plus text-emerald-400"></i>
+            <span>Add / Import Customers</span>
+          </h2>
+
+          <!-- Excel Bulk File Upload -->
+          <div class="p-3 bg-black/40 rounded-xl border border-dashed border-emerald-500/60 space-y-2">
+            <span class="text-xs font-bold text-emerald-300 block"><i class="fa-solid fa-file-excel mr-1"></i> Bulk Import from Excel (.xlsx / .csv)</span>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" class="block w-full text-[11px] text-emerald-400 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[11px] file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 cursor-pointer">
+            <button onclick="handleExcelUpload()" class="w-full py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold">Read & Upload to Cloud</button>
+          </div>
+
+          <!-- Single Manual Contact Form -->
+          <form onsubmit="handleManualContactSubmit(event)" class="space-y-3 text-xs pt-2 border-t border-emerald-800">
+            <div>
+              <label class="block text-emerald-300 mb-1">Customer / Firm Name *</label>
+              <input type="text" id="cntName" required placeholder="Sharma Hardware / Rakesh" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-emerald-300 mb-1">Mobile Number *</label>
+                <input type="tel" id="cntPhone" required placeholder="94252XXXXX" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              </div>
+              <div>
+                <label class="block text-emerald-300 mb-1">City / Route Sector</label>
+                <input type="text" id="cntRoute" required placeholder="Main Market / Geedam Road" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              </div>
+            </div>
+            <div>
+              <label class="block text-emerald-300 mb-1">Address / Landmark</label>
+              <input type="text" id="cntAddress" placeholder="Near Golbazar Fountain" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-emerald-300 mb-1">Category</label>
+              <select id="cntCategory" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+                <option value="CCTV Client">CCTV Security Client</option>
+                <option value="AMC Regular">Annual Maintenance Contract (AMC)</option>
+                <option value="Retail PC / Laptop">Retail PC & Laptop Buyer</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl">Save Contact</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 class="text-base font-semibold text-white">Customer Directory</h2>
+              <p class="text-xs text-emerald-300/70">Total Contacts: <b id="contactsTotalCount" class="text-white">0</b></p>
+            </div>
+            <div class="relative w-full sm:w-72">
+              <input type="text" id="contactSearchQuery" onkeyup="filterContactsDirectory()" placeholder="Search Name, Phone, or City..." class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-400">
+              <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-emerald-500 text-xs"></i>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Customer / Firm</th>
+                  <th class="py-2.5 px-3">City / Sector</th>
+                  <th class="py-2.5 px-3">Phone</th>
+                  <th class="py-2.5 px-3">Category</th>
+                  <th class="py-2.5 px-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="contactsTableBody" class="divide-y divide-emerald-900/60"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: ROUTE DISPATCH & TICKETS -->
+    <section id="view-routes" class="view-panel hidden space-y-6">
+      <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-emerald-800">
+          <div>
+            <h2 class="text-base font-semibold text-white">Daily Field Route Chart (रूट चार्ट असाइनमेंट)</h2>
+            <p class="text-xs text-emerald-300/70">Batch customer service calls by route and dispatch directly to technician mobile app</p>
+          </div>
+          <button onclick="openNewCallModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl flex items-center space-x-1.5 self-start sm:self-auto">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add Service Ticket</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 my-4 p-4 bg-black/40 rounded-xl border border-emerald-800 items-end">
+          <div>
+            <label class="block text-xs font-medium text-emerald-300 mb-1">Search Route / Customer</label>
+            <input type="text" id="ticketSearchInput" oninput="filterRouteTable()" placeholder="Search description or name..." class="w-full bg-emerald-950 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-emerald-300 mb-1">Select Route Sector</label>
+            <select id="routeFilterSelect" onchange="filterRouteTable()" class="w-full bg-emerald-950 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white">
+              <option value="ALL">All Routes (सभी इलाके)</option>
+              <option value="Main Market">Route 1: Main Market / Golbazar</option>
+              <option value="Industrial Area">Route 2: Industrial Area / Nagarnar</option>
+              <option value="Geedam Road">Route 3: Geedam Road Sector</option>
+              <option value="Dharampura Colony">Route 4: Dharampura / College Area</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-emerald-300 mb-1">Assign to Technician</label>
+            <select id="routeTechSelect" class="w-full bg-emerald-950 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white"></select>
+          </div>
+          <div>
+            <button onclick="batchAssignRouteTickets()" id="btnBatchAssign" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow transition flex items-center justify-center space-x-1.5">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>Assign Batch</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+              <tr>
+                <th class="py-3 px-3"><input type="checkbox" id="selectAllTickets" onchange="toggleSelectAllTickets(this)"></th>
+                <th class="py-3 px-3">Ticket ID</th>
+                <th class="py-3 px-3">Customer & Phone</th>
+                <th class="py-3 px-3">Route Sector</th>
+                <th class="py-3 px-3">Work Description</th>
+                <th class="py-3 px-3">Assigned Tech</th>
+                <th class="py-3 px-3">Status</th>
+                <th class="py-3 px-3 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="routeTicketsTableBody" class="divide-y divide-emerald-900/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: STOCK / INVENTORY -->
+    <section id="view-stock" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <h2 class="text-base font-semibold text-white">Stock In (नया माल जोड़ें)</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-emerald-300 mb-1">Item Category / Brand</label>
+              <select id="stockInCat" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white">
+                <option value="CCTV Dome">CCTV 2MP/5MP Dome Camera</option>
+                <option value="CCTV Bullet">CCTV Bullet Outdoor Camera</option>
+                <option value="DVR / NVR">4/8/16 Channel DVR / NVR</option>
+                <option value="Storage">Surveillance Hard Disk WD Purple</option>
+                <option value="Power">CCTV Power Supply SMPS</option>
+                <option value="Motherboard">PC Motherboard H61/H81/B450</option>
+                <option value="RAM / SSD">RAM DDR3/DDR4 & SSD</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-emerald-300 mb-1">Item Model Name</label>
+              <input type="text" id="stockInName" placeholder="CP PLUS 2.4MP Astra HD Dome" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-emerald-300 mb-1">Quantity</label>
+                <input type="number" id="stockInQty" value="5" min="1" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-emerald-300 mb-1">Selling Price (₹)</label>
+                <input type="number" id="stockInCost" placeholder="Price" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white">
+              </div>
+            </div>
+            <button onclick="handleStockIn()" id="btnStockIn" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl shadow transition">
+              <i class="fa-solid fa-arrow-down mr-1.5"></i> Update Cloud Stock
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">Live Hardware Stock Ledger</h2>
+            <input type="text" id="stockSearchInput" oninput="renderStock()" placeholder="Search Hardware..." class="bg-black/40 border border-emerald-700 rounded-xl px-3 py-1.5 text-xs text-white">
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Item Description</th>
+                  <th class="py-2.5 px-3">Category</th>
+                  <th class="py-2.5 px-3 text-center">Available Stock</th>
+                  <th class="py-2.5 px-3">Selling Price</th>
+                  <th class="py-2.5 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTableBody" class="divide-y divide-emerald-900/60"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 6: AUTOMATED ATTENDANCE & PAYROLL -->
+    <section id="view-payroll" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div>
+            <h2 class="text-base font-semibold text-white">Salary Calculator & Payslip</h2>
+            <p class="text-xs text-emerald-300/70">Monthly salary calculation based on automatic attendance</p>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block text-emerald-300 mb-1">Select Employee</label>
+              <select id="payrollEmpSelect" onchange="loadEmployeePayrollData()" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white"></select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-emerald-300 mb-1">Base Monthly Salary (₹)</label>
+                <input type="number" id="payrollBaseSalary" value="15000" oninput="computeNetSalary()" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              </div>
+              <div>
+                <label class="block text-emerald-300 mb-1">Standard Work Days</label>
+                <input type="number" id="payrollStandardDays" value="30" oninput="computeNetSalary()" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              </div>
+            </div>
+
+            <div class="p-3 bg-black/40 rounded-xl border border-emerald-800 space-y-2 text-emerald-200">
+              <div class="flex justify-between">
+                <span>Days Present:</span>
+                <b id="payrollDaysPresent" class="text-emerald-400">0 Days</b>
+              </div>
+              <div class="flex justify-between">
+                <span>Field Travel Allowances:</span>
+                <b id="payrollFieldAllowances" class="text-teal-300">₹0</b>
+              </div>
+              <div class="flex justify-between pt-2 border-t border-emerald-800 text-sm">
+                <span>Net Payable Salary:</span>
+                <b id="payrollNetSalary" class="text-emerald-400 font-bold">₹0</b>
+              </div>
+            </div>
+
+            <button onclick="printSalarySlip()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition flex items-center justify-center space-x-1.5 shadow">
+              <i class="fa-solid fa-print"></i>
+              <span>Print Official Salary Slip</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">Automated Daily Attendance Log</h2>
+            <p class="text-xs text-emerald-300/70">Operators (Login/Logout) • Technicians (First/Last Assigned Job)</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Date</th>
+                  <th class="py-2.5 px-3">Employee Name</th>
+                  <th class="py-2.5 px-3">Role</th>
+                  <th class="py-2.5 px-3">In Time</th>
+                  <th class="py-2.5 px-3">Out Time</th>
+                  <th class="py-2.5 px-3">Duty Hours</th>
+                  <th class="py-2.5 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody" class="divide-y divide-emerald-900/60"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 7: CALL CENTER -->
+    <section id="view-calls" class="view-panel hidden space-y-6">
+      <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5">
+        <div class="flex items-center justify-between pb-4 border-b border-emerald-800">
+          <div>
+            <h2 class="text-base font-semibold text-white">Call Login Desk (Call In / Call Out & Complaints)</h2>
+            <p class="text-xs text-emerald-300/70">Phone inquiry log, repairing requests, AMC meetings, and customer follow-ups</p>
+          </div>
+          <button onclick="openNewCallModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-xl">
+            + New Call Entry
+          </button>
+        </div>
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+              <tr>
+                <th class="py-3 px-3">Type</th>
+                <th class="py-3 px-3">Customer & Phone</th>
+                <th class="py-3 px-3">Inquiry / Issue</th>
+                <th class="py-3 px-3">Registered Time</th>
+                <th class="py-3 px-3">Current Status</th>
+                <th class="py-3 px-3 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="callLogTableBody" class="divide-y divide-emerald-900/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 8: TOUR EXPENSE & VEHICLE -->
+    <section id="view-expenses" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <h2 class="text-base font-semibold text-white">Log Travel & Bike/Car Service</h2>
+          <p class="text-xs text-emerald-300/70">पेट्रोल, टूर खर्च और गाड़ी सर्विसिंग रिकॉर्ड</p>
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block text-emerald-300 mb-1">Technician / Employee</label>
+              <select id="expTechName" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white"></select>
+            </div>
+            <div>
+              <label class="block text-emerald-300 mb-1">Expense Type</label>
+              <select id="expType" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+                <option value="Fuel / Petrol">Daily Petrol / Fuel</option>
+                <option value="Gadi Service">Vehicle / Bike Service & Mobil Oil</option>
+                <option value="Outstation Tour">Outstation Site Tour (TA / DA / Food)</option>
+                <option value="Emergency Hardware Purchase">Emergency Field Clamp/Pvc Pipe</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-emerald-300 mb-1">Amount (₹) *</label>
+                <input type="number" id="expAmount" placeholder="₹ 250" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              </div>
+              <div>
+                <label class="block text-emerald-300 mb-1">Current Odometer (KM)</label>
+                <input type="number" id="expOdo" placeholder="e.g. 14250" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              </div>
+            </div>
+            <div>
+              <label class="block text-emerald-300 mb-1">Remarks / Location visited</label>
+              <input type="text" id="expNote" placeholder="Visited Nagarnar plant for CCTV setup" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <button onclick="logNewExpense()" id="btnSaveExpense" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition">
+              Submit Expense to Cloud
+            </button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">Expenses & Vehicle Maintenance Log</h2>
+            <p class="text-xs text-emerald-300/70">Total Approved: <b id="expTotalSum" class="text-emerald-400">₹0</b></p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Date</th>
+                  <th class="py-2.5 px-3">Tech</th>
+                  <th class="py-2.5 px-3">Type</th>
+                  <th class="py-2.5 px-3">Odometer</th>
+                  <th class="py-2.5 px-3">Amount</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody id="expenseTableBody" class="divide-y divide-emerald-900/60"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 9: USER MANAGEMENT -->
+    <section id="view-users" class="view-panel hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <h2 class="text-base font-semibold text-white flex items-center space-x-2">
+            <i class="fa-solid fa-user-plus text-emerald-400"></i>
+            <span>Generate Staff Login Credentials</span>
+          </h2>
+          <form onsubmit="handleCreateUser(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block text-emerald-300 mb-1">Full Employee Name *</label>
+              <input type="text" id="newStaffName" required placeholder="e.g. Suraj Netam" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-emerald-300 mb-1">Role Permission *</label>
+                <select id="newStaffRole" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+                  <option value="technician">Field Technician</option>
+                  <option value="operator">Desk Operator</option>
+                  <option value="admin">Managing Director</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-emerald-300 mb-1">Assigned Route</label>
+                <select id="newStaffRoute" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+                  <option value="Main Market">Main Market</option>
+                  <option value="Industrial Area">Industrial Area</option>
+                  <option value="Geedam Road">Geedam Road</option>
+                  <option value="Dharampura Colony">Dharampura Colony</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-emerald-300 mb-1">Username *</label>
+                <input type="text" id="newStaffUsername" required placeholder="e.g. suraj101" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white font-mono">
+              </div>
+              <div>
+                <label class="block text-emerald-300 mb-1">Password *</label>
+                <input type="text" id="newStaffPassword" required placeholder="Pass@123" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white font-mono">
+              </div>
+            </div>
+            <div>
+              <label class="block text-emerald-300 mb-1">Mobile Number (WhatsApp) *</label>
+              <input type="tel" id="newStaffPhone" required placeholder="98261XXXXX" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div class="pt-2">
+              <button type="button" onclick="autoGenerateCredentials()" class="text-xs text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 mb-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Auto-Generate Random Username & Password</span>
+              </button>
+              <button type="submit" id="btnCreateUser" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition">
+                Create & Save to Google Sheet
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 bg-emerald-950/80 border border-emerald-800/80 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">Active System Users Directory</h2>
+            <span class="text-xs bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30 font-semibold" id="totalUsersBadge">0 Staff</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-black/40 text-emerald-300 border-b border-emerald-800 uppercase font-semibold">
+                <tr>
+                  <th class="py-2.5 px-3">Name & Phone</th>
+                  <th class="py-2.5 px-3">Role</th>
+                  <th class="py-2.5 px-3">Username</th>
+                  <th class="py-2.5 px-3">Password</th>
+                  <th class="py-2.5 px-3">Sector</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody" class="divide-y divide-emerald-900/60"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 10: FIELD TECHNICIAN MOBILE APP VIEW -->
+    <section id="view-technician" class="view-panel hidden">
+      <div class="max-w-md mx-auto bg-emerald-950/90 border border-emerald-700/80 rounded-3xl p-4 shadow-2xl overflow-hidden relative">
+        <div class="bg-black/40 -m-4 p-4 border-b border-emerald-800 mb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold">
+              <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white flex items-center space-x-1.5">
+                <span id="mobileTechName">Technician</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              </div>
+              <span class="text-[10px] text-emerald-300/70" id="mobileTechSub">Field Duty • Cloud Linked</span>
+            </div>
+          </div>
+          <button onclick="fetchFromGoogleSheet()" class="text-xs text-emerald-300 bg-emerald-900/50 border border-emerald-700 px-2 py-1 rounded-lg">
+            <i class="fa-solid fa-rotate"></i> Sync
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 my-2">
+          <div class="bg-black/40 p-2.5 rounded-xl border border-emerald-800 text-center">
+            <span class="text-[10px] text-emerald-300/70">Assigned Today</span>
+            <div class="text-lg font-bold text-white" id="mobileAssignedCount">0 Calls</div>
+          </div>
+          <div class="bg-black/40 p-2.5 rounded-xl border border-emerald-800 text-center">
+            <span class="text-[10px] text-emerald-300/70">Completed & Closed</span>
+            <div class="text-lg font-bold text-emerald-400" id="mobileCompletedCount">0 Done</div>
+          </div>
+        </div>
+
+        <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-300 mt-3 mb-2 flex items-center justify-between">
+          <span>My Route Work Checklist</span>
+          <span class="text-[10px] text-emerald-400">Tap to Complete</span>
+        </h3>
+
+        <div id="techMobileJobsList" class="space-y-3"></div>
+
+        <div class="mt-4 pt-3 border-t border-emerald-800">
+          <button onclick="changeTab('expenses')" class="w-full py-2 bg-emerald-900/60 hover:bg-emerald-800 border border-emerald-700 text-emerald-300 rounded-xl text-xs font-medium flex items-center justify-center space-x-2">
+            <i class="fa-solid fa-gas-pump"></i>
+            <span>Log Petrol / Gaadi Service on Route</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MOBILE BOTTOM BAR -->
+  <div class="fixed bottom-0 left-0 right-0 bg-emerald-950 border-t border-emerald-800 p-2 flex justify-around items-center z-50 sm:hidden">
+    <button onclick="changeTab('technician')" class="flex flex-col items-center text-emerald-400 text-[10px] font-semibold">
+      <i class="fa-solid fa-list-check text-base mb-0.5"></i>
+      <span>My Tasks</span>
+    </button>
+    <button onclick="changeTab('expenses')" class="flex flex-col items-center text-emerald-300/60 hover:text-emerald-300 text-[10px] font-semibold">
+      <i class="fa-solid fa-gas-pump text-base mb-0.5"></i>
+      <span>Expenses</span>
+    </button>
+    <button onclick="fetchFromGoogleSheet()" class="flex flex-col items-center text-emerald-300/60 hover:text-emerald-300 text-[10px] font-semibold">
+      <i class="fa-solid fa-cloud-arrow-down text-base mb-0.5"></i>
+      <span>Cloud Sync</span>
+    </button>
+    <button onclick="logoutCurrentUser()" class="flex flex-col items-center text-rose-400 text-[10px] font-semibold">
+      <i class="fa-solid fa-arrow-right-from-bracket text-base mb-0.5"></i>
+      <span>Logout</span>
+    </button>
+  </div>
+
+  <!-- MODAL: NEW CUSTOMER CALL -->
+  <div id="newCallModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-emerald-950 border border-emerald-700 rounded-2xl max-w-lg w-full p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-emerald-800 pb-2">
+        <h3 class="text-sm font-bold text-white">Log Call / Service Ticket (कॉल व कंप्लेंट दर्ज करें)</h3>
+        <button onclick="closeNewCallModal()" class="text-emerald-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-emerald-300 mb-1">Customer / Shop Name *</label>
+            <input type="text" id="modalCustName" placeholder="Verma Jewellers" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+          </div>
+          <div>
+            <label class="block text-emerald-300 mb-1">Phone Number *</label>
+            <input type="tel" id="modalCustPhone" placeholder="94252XXXXX" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-emerald-300 mb-1">Route / Sector</label>
+            <select id="modalCustRoute" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              <option value="Main Market">Main Market (मुख्य बाज़ार)</option>
+              <option value="Industrial Area">Industrial Area</option>
+              <option value="Geedam Road">Geedam Road</option>
+              <option value="Dharampura Colony">Dharampura Colony</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-emerald-300 mb-1">Call Category</label>
+            <select id="modalCallType" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+              <option value="CCTV Offline / No Display">CCTV Offline / Camera Not Working</option>
+              <option value="DVR Recording Issue">DVR HDD / No Recording</option>
+              <option value="PC Repairing">PC / Laptop Not Powering On</option>
+              <option value="New CCTV Inquiry">New CCTV Quotation & Meeting</option>
+              <option value="AMC Routine Visit">Routine AMC Service Check</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-emerald-300 mb-1">Problem Description</label>
+          <textarea id="modalCallDesc" rows="2" placeholder="e.g. 2 cameras blurry, DVR continuous beeping sound" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-emerald-300 mb-1">Direct Assign to Tech (Optional)</label>
+          <select id="modalDirectTech" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white"></select>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2 border-t border-emerald-800">
+          <button onclick="closeNewCallModal()" class="px-4 py-2 bg-emerald-900/60 text-emerald-200 rounded-xl">Cancel</button>
+          <button onclick="saveNewCallTicket()" id="btnSaveTicket" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl">Save Ticket to Cloud</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COMPLETE JOB -->
+  <div id="closeJobModal" class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+    <div class="bg-emerald-950 border border-emerald-700 rounded-2xl max-w-sm w-full p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-emerald-800 pb-2">
+        <h3 class="text-sm font-bold text-white flex items-center space-x-1.5">
+          <i class="fa-solid fa-circle-check text-emerald-400"></i>
+          <span>Complete Ticket & Close Call</span>
+        </h3>
+        <button onclick="closeModal('closeJobModal')" class="text-emerald-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <input type="hidden" id="closingTicketId">
+      <div class="space-y-3 text-xs">
+        <div>
+          <span class="text-emerald-300">Customer:</span>
+          <p id="closingCustName" class="text-white font-semibold"></p>
+        </div>
+        <div>
+          <label class="block text-emerald-300 mb-1">Work Done / Action Taken *</label>
+          <textarea id="closingRemarks" rows="2" placeholder="e.g. Replaced BNC connector, DVR adapter changed" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-emerald-300 mb-1">Spare Parts Used (if any)</label>
+          <input type="text" id="closingPartsUsed" placeholder="1x 12V 2A Adapter, 2x BNC" class="w-full bg-black/40 border border-emerald-700 rounded-xl px-3 py-2 text-white">
+        </div>
+        <button onclick="submitJobClosure()" id="btnCloseJob" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition">
+          Confirm Completion & Push to Sheet
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINTABLE AREA -->
+  <div id="printableArea" class="hidden bg-white text-black font-sans">
+    <div id="printContentHolder"></div>
+  </div>
+
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- JAVASCRIPT MODULES -->
+  <script src="js/app.js"></script>
+  <script src="js/billing.js"></script>
+  <script src="js/contacts.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="js/stock.js"></script>
+  <script src="js/payroll.js"></script>
+  <script src="js/expenses.js"></script>
+  <script src="js/users.js"></script>
+
+</body>
+</html>
